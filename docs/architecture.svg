@@ -1,0 +1,363 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0a0f"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="onChainGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="agentGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="arrowGradBlue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1A56DB"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="arrowGradGreen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0E9F6E"/>
+      <stop offset="100%" stop-color="#34D399"/>
+    </linearGradient>
+    <linearGradient id="arrowGradAmber" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#B45309"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <linearGradient id="circleGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#3B82F6"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#34D399"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#F59E0B"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#A78BFA"/>
+    </marker>
+    <marker id="arrowCyan" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#67E8F9"/>
+    </marker>
+    <marker id="arrowWhite" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#94A3B8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="800" fill="url(#bgGrad)"/>
+  <!-- Subtle grid pattern -->
+  <g opacity="0.03">
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(60,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(120,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(180,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(240,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(300,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(360,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(420,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(480,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(540,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(600,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(660,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(720,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(780,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(840,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(900,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(960,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(1020,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(1080,0)"/>
+    <line x1="0" y1="0" x2="0" y2="800" stroke="#fff" stroke-width="0.5" transform="translate(1140,0)"/>
+  </g>
+
+  <!-- Title Bar -->
+  <rect x="0" y="0" width="1200" height="52" fill="#0f172a" opacity="0.8"/>
+  <line x1="0" y1="52" x2="1200" y2="52" stroke="#1A56DB" stroke-width="1" opacity="0.4"/>
+  <text x="32" y="34" font-family="'SF Mono','Fira Code','Consolas',monospace" font-size="18" fill="#E2E8F0" font-weight="700" letter-spacing="2">DRACHMA</text>
+  <text x="168" y="34" font-family="'SF Mono','Fira Code','Consolas',monospace" font-size="12" fill="#64748B" letter-spacing="1">PROTOCOL ARCHITECTURE</text>
+  <text x="1168" y="34" font-family="'SF Mono','Fira Code','Consolas',monospace" font-size="11" fill="#475569" text-anchor="end">v1.0</text>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- LAYER 1: ON-CHAIN (Left column, top)       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g filter="url(#softShadow)">
+    <rect x="32" y="68" width="350" height="195" rx="6" fill="url(#onChainGrad)" stroke="#1A56DB" stroke-width="1" opacity="0.95"/>
+    <!-- Layer label -->
+    <rect x="32" y="68" width="350" height="28" rx="6" fill="#1A56DB" opacity="0.15"/>
+    <rect x="32" y="90" width="350" height="6" rx="0" fill="url(#onChainGrad)"/>
+    <text x="48" y="87" font-family="'SF Mono','Fira Code',monospace" font-size="9" fill="#3B82F6" font-weight="700" letter-spacing="2">L1</text>
+    <text x="72" y="87" font-family="'Inter','Helvetica Neue',sans-serif" font-size="11" fill="#93C5FD" font-weight="600" letter-spacing="1">ON-CHAIN</text>
+    <text x="370" y="87" font-family="'Inter',sans-serif" font-size="9" fill="#475569" text-anchor="end">Arc EVM</text>
+    <!-- Title -->
+    <text x="48" y="114" font-family="'Inter','Helvetica Neue',sans-serif" font-size="14" fill="#E2E8F0" font-weight="700">DrachmaVault.sol</text>
+    <!-- Asset badges -->
+    <rect x="48" y="124" width="52" height="18" rx="9" fill="#1A56DB" opacity="0.25"/>
+    <text x="74" y="136" font-family="'SF Mono',monospace" font-size="9" fill="#60A5FA" text-anchor="middle" font-weight="600">USDC</text>
+    <rect x="108" y="124" width="50" height="18" rx="9" fill="#0E9F6E" opacity="0.25"/>
+    <text x="133" y="136" font-family="'SF Mono',monospace" font-size="9" fill="#34D399" text-anchor="middle" font-weight="600">EURC</text>
+    <rect x="166" y="124" width="50" height="18" rx="9" fill="#B45309" opacity="0.25"/>
+    <text x="191" y="136" font-family="'SF Mono',monospace" font-size="9" fill="#FBBF24" text-anchor="middle" font-weight="600">USYC</text>
+    <!-- Functions -->
+    <text x="48" y="162" font-family="'SF Mono',monospace" font-size="9" fill="#64748B">Functions</text>
+    <text x="48" y="178" font-family="'SF Mono',monospace" font-size="10" fill="#94A3B8">rebalance()</text>
+    <text x="145" y="178" font-family="'SF Mono',monospace" font-size="10" fill="#94A3B8">emergencyExit()</text>
+    <text x="48" y="194" font-family="'SF Mono',monospace" font-size="10" fill="#94A3B8">deposit()</text>
+    <text x="145" y="194" font-family="'SF Mono',monospace" font-size="10" fill="#94A3B8">withdraw()</text>
+    <!-- Events -->
+    <text x="48" y="216" font-family="'SF Mono',monospace" font-size="9" fill="#64748B">Emits events</text>
+    <text x="130" y="216" font-family="'SF Mono',monospace" font-size="9" fill="#475569">|</text>
+    <text x="140" y="216" font-family="'SF Mono',monospace" font-size="9" fill="#64748B">Stores DecisionLog</text>
+    <!-- Accent dot -->
+    <circle cx="370" cy="114" r="4" fill="#1A56DB" opacity="0.6"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- LAYER 2: AGENT (Center column, top)         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g filter="url(#softShadow)">
+    <rect x="420" y="68" width="350" height="195" rx="6" fill="url(#agentGrad)" stroke="#A78BFA" stroke-width="1" opacity="0.95"/>
+    <rect x="420" y="68" width="350" height="28" rx="6" fill="#7C3AED" opacity="0.15"/>
+    <rect x="420" y="90" width="350" height="6" rx="0" fill="url(#agentGrad)"/>
+    <text x="436" y="87" font-family="'SF Mono',monospace" font-size="9" fill="#A78BFA" font-weight="700" letter-spacing="2">L2</text>
+    <text x="460" y="87" font-family="'Inter',sans-serif" font-size="11" fill="#C4B5FD" font-weight="600" letter-spacing="1">AGENT</text>
+    <text x="758" y="87" font-family="'Inter',sans-serif" font-size="9" fill="#475569" text-anchor="end">MuleRun VM</text>
+    <!-- Title -->
+    <text x="436" y="114" font-family="'Inter',sans-serif" font-size="14" fill="#E2E8F0" font-weight="700">Drachma Agent</text>
+    <rect x="560" y="102" width="70" height="16" rx="8" fill="#7C3AED" opacity="0.2"/>
+    <text x="595" y="113" font-family="'SF Mono',monospace" font-size="8" fill="#A78BFA" text-anchor="middle">every 4h</text>
+    <!-- Skills grid -->
+    <text x="436" y="136" font-family="'SF Mono',monospace" font-size="9" fill="#64748B">Skills</text>
+    <!-- Skill 1 -->
+    <rect x="436" y="144" width="148" height="26" rx="4" fill="#1e1b4b" stroke="#4338CA" stroke-width="0.5"/>
+    <circle cx="450" cy="157" r="3" fill="#3B82F6"/>
+    <text x="460" y="161" font-family="'SF Mono',monospace" font-size="9" fill="#A5B4FC">market_fetch</text>
+    <!-- Skill 2 -->
+    <rect x="592" y="144" width="166" height="26" rx="4" fill="#1e1b4b" stroke="#4338CA" stroke-width="0.5"/>
+    <circle cx="606" cy="157" r="3" fill="#A78BFA"/>
+    <text x="616" y="161" font-family="'SF Mono',monospace" font-size="9" fill="#A5B4FC">llm_reason</text>
+    <text x="692" y="161" font-family="'Inter',sans-serif" font-size="8" fill="#6366F1">(Claude)</text>
+    <!-- Skill 3 -->
+    <rect x="436" y="178" width="148" height="26" rx="4" fill="#1e1b4b" stroke="#4338CA" stroke-width="0.5"/>
+    <circle cx="450" cy="191" r="3" fill="#0E9F6E"/>
+    <text x="460" y="195" font-family="'SF Mono',monospace" font-size="9" fill="#A5B4FC">ipfs_pin</text>
+    <!-- Skill 4 -->
+    <rect x="592" y="178" width="166" height="26" rx="4" fill="#1e1b4b" stroke="#4338CA" stroke-width="0.5"/>
+    <circle cx="606" cy="191" r="3" fill="#F59E0B"/>
+    <text x="616" y="195" font-family="'SF Mono',monospace" font-size="9" fill="#A5B4FC">arc_submit</text>
+    <!-- Execution flow -->
+    <text x="436" y="224" font-family="'SF Mono',monospace" font-size="8" fill="#475569">fetch → reason → pin → submit</text>
+    <circle cx="758" cy="114" r="4" fill="#7C3AED" opacity="0.6"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- LAYER 3: DATA (Right column, top)           -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g filter="url(#softShadow)">
+    <rect x="808" y="68" width="360" height="195" rx="6" fill="url(#onChainGrad)" stroke="#0E9F6E" stroke-width="1" opacity="0.95"/>
+    <rect x="808" y="68" width="360" height="28" rx="6" fill="#0E9F6E" opacity="0.15"/>
+    <rect x="808" y="90" width="360" height="6" rx="0" fill="url(#onChainGrad)"/>
+    <text x="824" y="87" font-family="'SF Mono',monospace" font-size="9" fill="#0E9F6E" font-weight="700" letter-spacing="2">L3</text>
+    <text x="848" y="87" font-family="'Inter',sans-serif" font-size="11" fill="#6EE7B7" font-weight="600" letter-spacing="1">DATA</text>
+    <text x="1156" y="87" font-family="'Inter',sans-serif" font-size="9" fill="#475569" text-anchor="end">Pinata</text>
+    <!-- Title -->
+    <text x="824" y="114" font-family="'Inter',sans-serif" font-size="14" fill="#E2E8F0" font-weight="700">IPFS Reasoning Store</text>
+    <!-- Diagram -->
+    <rect x="824" y="126" width="328" height="44" rx="4" fill="#064E3B" opacity="0.3" stroke="#0E9F6E" stroke-width="0.5"/>
+    <text x="840" y="146" font-family="'SF Mono',monospace" font-size="10" fill="#A7F3D0">Full LLM reasoning trace pinned</text>
+    <text x="840" y="162" font-family="'SF Mono',monospace" font-size="10" fill="#6EE7B7">CID stored on-chain in DecisionLog</text>
+    <!-- Flow -->
+    <rect x="824" y="182" width="120" height="30" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.5"/>
+    <text x="884" y="201" font-family="'SF Mono',monospace" font-size="9" fill="#94A3B8" text-anchor="middle">Agent pins</text>
+    <text x="955" y="201" font-family="'Inter',sans-serif" font-size="14" fill="#475569">→</text>
+    <rect x="968" y="182" width="80" height="30" rx="4" fill="#064E3B" opacity="0.4" stroke="#0E9F6E" stroke-width="0.5"/>
+    <text x="1008" y="201" font-family="'SF Mono',monospace" font-size="9" fill="#6EE7B7" text-anchor="middle">IPFS</text>
+    <text x="1059" y="201" font-family="'Inter',sans-serif" font-size="14" fill="#475569">→</text>
+    <rect x="1072" y="182" width="80" height="30" rx="4" fill="#1A56DB" opacity="0.15" stroke="#1A56DB" stroke-width="0.5"/>
+    <text x="1112" y="201" font-family="'SF Mono',monospace" font-size="9" fill="#60A5FA" text-anchor="middle">On-Chain</text>
+    <text x="824" y="250" font-family="'SF Mono',monospace" font-size="8" fill="#475569">Immutable audit trail for every rebalance decision</text>
+    <circle cx="1156" cy="114" r="4" fill="#0E9F6E" opacity="0.6"/>
+  </g>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- LAYER 4: INTERFACE (Left, bottom)           -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g filter="url(#softShadow)">
+    <rect x="32" y="288" width="545" height="170" rx="6" fill="url(#onChainGrad)" stroke="#06B6D4" stroke-width="1" opacity="0.95"/>
+    <rect x="32" y="288" width="545" height="28" rx="6" fill="#06B6D4" opacity="0.12"/>
+    <rect x="32" y="310" width="545" height="6" rx="0" fill="url(#onChainGrad)"/>
+    <text x="48" y="307" font-family="'SF Mono',monospace" font-size="9" fill="#06B6D4" font-weight="700" letter-spacing="2">L4</text>
+    <text x="72" y="307" font-family="'Inter',sans-serif" font-size="11" fill="#67E8F9" font-weight="600" letter-spacing="1">INTERFACE</text>
+    <text x="565" y="307" font-family="'Inter',sans-serif" font-size="9" fill="#475569" text-anchor="end">Vercel</text>
+    <!-- Title -->
+    <text x="48" y="336" font-family="'Inter',sans-serif" font-size="14" fill="#E2E8F0" font-weight="700">Next.js 14 Dashboard</text>
+    <!-- Feature boxes -->
+    <rect x="48" y="348" width="150" height="40" rx="4" fill="#164E63" opacity="0.3" stroke="#0E7490" stroke-width="0.5"/>
+    <text x="123" y="364" font-family="'SF Mono',monospace" font-size="10" fill="#67E8F9" text-anchor="middle">Public Vault View</text>
+    <text x="123" y="378" font-family="'SF Mono',monospace" font-size="8" fill="#475569" text-anchor="middle">TVL, APY, History</text>
+    <rect x="210" y="348" width="120" height="40" rx="4" fill="#164E63" opacity="0.3" stroke="#0E7490" stroke-width="0.5"/>
+    <text x="270" y="364" font-family="'SF Mono',monospace" font-size="10" fill="#67E8F9" text-anchor="middle">Calculator</text>
+    <text x="270" y="378" font-family="'SF Mono',monospace" font-size="8" fill="#475569" text-anchor="middle">Yield Projections</text>
+    <rect x="342" y="348" width="120" height="40" rx="4" fill="#164E63" opacity="0.3" stroke="#0E7490" stroke-width="0.5"/>
+    <text x="402" y="364" font-family="'SF Mono',monospace" font-size="10" fill="#67E8F9" text-anchor="middle">Owner Panel</text>
+    <text x="402" y="378" font-family="'SF Mono',monospace" font-size="8" fill="#475569" text-anchor="middle">Admin Controls</text>
+    <!-- Data sources -->
+    <text x="48" y="412" font-family="'SF Mono',monospace" font-size="9" fill="#64748B">Reads from:</text>
+    <rect x="130" y="400" width="80" height="18" rx="9" fill="#1A56DB" opacity="0.2"/>
+    <text x="170" y="413" font-family="'SF Mono',monospace" font-size="9" fill="#60A5FA" text-anchor="middle">Arc RPC</text>
+    <text x="220" y="413" font-family="'Inter',sans-serif" font-size="10" fill="#334155">+</text>
+    <rect x="234" y="400" width="110" height="18" rx="9" fill="#0E9F6E" opacity="0.2"/>
+    <text x="289" y="413" font-family="'SF Mono',monospace" font-size="9" fill="#34D399" text-anchor="middle">IPFS Gateway</text>
+    <circle cx="565" cy="336" r="4" fill="#06B6D4" opacity="0.6"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- LAYER 5: ACQUISITION (Right, bottom)        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g filter="url(#softShadow)">
+    <rect x="608" y="288" width="560" height="170" rx="6" fill="url(#onChainGrad)" stroke="#F59E0B" stroke-width="1" opacity="0.95"/>
+    <rect x="608" y="288" width="560" height="28" rx="6" fill="#F59E0B" opacity="0.1"/>
+    <rect x="608" y="310" width="560" height="6" rx="0" fill="url(#onChainGrad)"/>
+    <text x="624" y="307" font-family="'SF Mono',monospace" font-size="9" fill="#F59E0B" font-weight="700" letter-spacing="2">L5</text>
+    <text x="648" y="307" font-family="'Inter',sans-serif" font-size="11" fill="#FCD34D" font-weight="600" letter-spacing="1">ACQUISITION</text>
+    <text x="1156" y="307" font-family="'Inter',sans-serif" font-size="9" fill="#475569" text-anchor="end">Cold-Start Engine</text>
+    <!-- Title -->
+    <text x="624" y="336" font-family="'Inter',sans-serif" font-size="14" fill="#E2E8F0" font-weight="700">Growth &amp; Distribution</text>
+    <!-- Components in a row -->
+    <rect x="624" y="348" width="100" height="40" rx="4" fill="#78350F" opacity="0.2" stroke="#B45309" stroke-width="0.5"/>
+    <text x="674" y="364" font-family="'SF Mono',monospace" font-size="10" fill="#FCD34D" text-anchor="middle">Calculator</text>
+    <text x="674" y="378" font-family="'SF Mono',monospace" font-size="8" fill="#92400E" text-anchor="middle">Lead Capture</text>
+
+    <rect x="734" y="348" width="100" height="40" rx="4" fill="#78350F" opacity="0.2" stroke="#B45309" stroke-width="0.5"/>
+    <text x="784" y="364" font-family="'SF Mono',monospace" font-size="10" fill="#FCD34D" text-anchor="middle">Demo Vault</text>
+    <text x="784" y="378" font-family="'SF Mono',monospace" font-size="8" fill="#92400E" text-anchor="middle">Try Before Buy</text>
+
+    <rect x="844" y="348" width="106" height="40" rx="4" fill="#78350F" opacity="0.2" stroke="#B45309" stroke-width="0.5"/>
+    <text x="897" y="364" font-family="'SF Mono',monospace" font-size="10" fill="#FCD34D" text-anchor="middle">DAO Reports</text>
+    <text x="897" y="378" font-family="'SF Mono',monospace" font-size="8" fill="#92400E" text-anchor="middle">Transparency</text>
+
+    <rect x="960" y="348" width="100" height="40" rx="4" fill="#78350F" opacity="0.2" stroke="#B45309" stroke-width="0.5"/>
+    <text x="1010" y="364" font-family="'SF Mono',monospace" font-size="10" fill="#FCD34D" text-anchor="middle">SEO Content</text>
+    <text x="1010" y="378" font-family="'SF Mono',monospace" font-size="8" fill="#92400E" text-anchor="middle">Organic Traffic</text>
+
+    <rect x="1070" y="348" width="86" height="40" rx="4" fill="#7C3AED" opacity="0.15" stroke="#7C3AED" stroke-width="0.5"/>
+    <text x="1113" y="364" font-family="'SF Mono',monospace" font-size="9" fill="#C4B5FD" text-anchor="middle">MuleRun</text>
+    <text x="1113" y="378" font-family="'SF Mono',monospace" font-size="8" fill="#6D28D9" text-anchor="middle">Listing</text>
+
+    <!-- Summary -->
+    <text x="624" y="412" font-family="'SF Mono',monospace" font-size="8" fill="#475569">User acquisition funnel: discover → simulate → deposit → compound</text>
+    <circle cx="1156" cy="336" r="4" fill="#F59E0B" opacity="0.6"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- DATA FLOW ARROWS (between layers)              -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <g>
+    <!-- Agent → Arc RPC (fetch vault state) -->
+    <line x1="420" y1="165" x2="382" y2="165" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowBlue)" opacity="0.7"/>
+    <text x="396" y="157" font-family="'SF Mono',monospace" font-size="7" fill="#3B82F6" text-anchor="middle" opacity="0.8">read</text>
+
+    <!-- Agent → Claude API (LLM reasoning) — goes up from agent box -->
+    <line x1="650" y1="144" x2="650" y2="60" stroke="#A78BFA" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowPurple)" opacity="0.6"/>
+    <rect x="656" y="56" width="72" height="16" rx="3" fill="#0f172a" stroke="#4338CA" stroke-width="0.5"/>
+    <text x="692" y="67" font-family="'SF Mono',monospace" font-size="8" fill="#A78BFA" text-anchor="middle">Claude API</text>
+
+    <!-- Agent → Pinata (pin reasoning) -->
+    <line x1="770" y1="190" x2="808" y2="190" stroke="#34D399" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowGreen)" opacity="0.7"/>
+    <text x="790" y="183" font-family="'SF Mono',monospace" font-size="7" fill="#34D399" text-anchor="middle" opacity="0.8">pin</text>
+
+    <!-- Agent → Arc (submit tx) -->
+    <line x1="420" y1="195" x2="382" y2="220" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowAmber)" opacity="0.7"/>
+    <text x="394" y="215" font-family="'SF Mono',monospace" font-size="7" fill="#F59E0B" text-anchor="middle" opacity="0.8">tx</text>
+
+    <!-- Dashboard → Arc RPC (read state) -->
+    <line x1="207" y1="288" x2="207" y2="263" stroke="#67E8F9" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowCyan)" opacity="0.6"/>
+    <text x="220" y="279" font-family="'SF Mono',monospace" font-size="7" fill="#67E8F9" opacity="0.8">state</text>
+
+    <!-- Dashboard → IPFS Gateway (fetch reasoning) -->
+    <line x1="577" y1="350" x2="808" y2="200" stroke="#34D399" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrowGreen)" opacity="0.4"/>
+    <text x="680" y="264" font-family="'SF Mono',monospace" font-size="7" fill="#34D399" opacity="0.6" transform="rotate(-25, 680, 264)">fetch reasoning</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- FOUNDATION: Circle Tools                        -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <g filter="url(#softShadow)">
+    <rect x="32" y="486" width="1136" height="90" rx="6" fill="url(#circleGrad)" stroke="#334155" stroke-width="1" opacity="0.95"/>
+    <!-- Header bar -->
+    <rect x="32" y="486" width="1136" height="26" rx="6" fill="#1e293b" opacity="0.6"/>
+    <rect x="32" y="506" width="1136" height="6" rx="0" fill="url(#circleGrad)"/>
+    <!-- Circle logo placeholder -->
+    <circle cx="52" cy="499" r="7" fill="none" stroke="#94A3B8" stroke-width="1.5"/>
+    <text x="68" y="503" font-family="'Inter',sans-serif" font-size="11" fill="#CBD5E1" font-weight="600" letter-spacing="1">CIRCLE TOOLS</text>
+    <text x="1156" y="503" font-family="'Inter',sans-serif" font-size="9" fill="#475569" text-anchor="end">Foundation Layer</text>
+
+    <!-- Tool badges -->
+    <rect x="60" y="522" width="80" height="32" rx="4" fill="#1A56DB" opacity="0.15" stroke="#1A56DB" stroke-width="0.5"/>
+    <circle cx="76" cy="534" r="4" fill="#1A56DB"/>
+    <text x="108" y="538" font-family="'SF Mono',monospace" font-size="10" fill="#60A5FA" text-anchor="middle">USDC</text>
+    <text x="100" y="550" font-family="'SF Mono',monospace" font-size="7" fill="#475569" text-anchor="middle">Stablecoin</text>
+
+    <rect x="160" y="522" width="80" height="32" rx="4" fill="#0E9F6E" opacity="0.15" stroke="#0E9F6E" stroke-width="0.5"/>
+    <circle cx="176" cy="534" r="4" fill="#0E9F6E"/>
+    <text x="208" y="538" font-family="'SF Mono',monospace" font-size="10" fill="#34D399" text-anchor="middle">EURC</text>
+    <text x="200" y="550" font-family="'SF Mono',monospace" font-size="7" fill="#475569" text-anchor="middle">Euro Coin</text>
+
+    <rect x="260" y="522" width="80" height="32" rx="4" fill="#B45309" opacity="0.15" stroke="#B45309" stroke-width="0.5"/>
+    <circle cx="276" cy="534" r="4" fill="#B45309"/>
+    <text x="308" y="538" font-family="'SF Mono',monospace" font-size="10" fill="#FBBF24" text-anchor="middle">USYC</text>
+    <text x="300" y="550" font-family="'SF Mono',monospace" font-size="7" fill="#475569" text-anchor="middle">Yield Coin</text>
+
+    <rect x="380" y="522" width="110" height="32" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.5"/>
+    <text x="435" y="538" font-family="'SF Mono',monospace" font-size="10" fill="#94A3B8" text-anchor="middle">StableFX</text>
+    <text x="435" y="550" font-family="'SF Mono',monospace" font-size="7" fill="#475569" text-anchor="middle">FX Conversion</text>
+
+    <rect x="510" y="522" width="130" height="32" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.5"/>
+    <text x="575" y="538" font-family="'SF Mono',monospace" font-size="10" fill="#94A3B8" text-anchor="middle">Agent Wallets</text>
+    <text x="575" y="550" font-family="'SF Mono',monospace" font-size="7" fill="#475569" text-anchor="middle">Programmable</text>
+
+    <rect x="660" y="522" width="110" height="32" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.5"/>
+    <text x="715" y="538" font-family="'SF Mono',monospace" font-size="10" fill="#94A3B8" text-anchor="middle">Paymaster</text>
+    <text x="715" y="550" font-family="'SF Mono',monospace" font-size="7" fill="#475569" text-anchor="middle">Gas Sponsorship</text>
+
+    <!-- Connecting line up to vault -->
+    <line x1="100" y1="522" x2="100" y2="486" stroke="#1A56DB" stroke-width="0.5" opacity="0.3"/>
+    <line x1="200" y1="522" x2="200" y2="486" stroke="#0E9F6E" stroke-width="0.5" opacity="0.3"/>
+    <line x1="300" y1="522" x2="300" y2="486" stroke="#B45309" stroke-width="0.5" opacity="0.3"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- VERTICAL FLOW CONNECTORS (Layers to Foundation) -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <g opacity="0.25">
+    <line x1="207" y1="458" x2="207" y2="486" stroke="#94A3B8" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="595" y1="458" x2="595" y2="486" stroke="#94A3B8" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="988" y1="458" x2="988" y2="486" stroke="#94A3B8" stroke-width="1" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LEGEND (Bottom right)                           -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <g>
+    <rect x="808" y="522" width="360" height="44" rx="4" fill="#0f172a" opacity="0.6"/>
+    <text x="824" y="539" font-family="'SF Mono',monospace" font-size="8" fill="#475569" letter-spacing="1">DATA FLOW</text>
+    <!-- Legend items -->
+    <line x1="824" y1="552" x2="848" y2="552" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="854" y="556" font-family="'SF Mono',monospace" font-size="7" fill="#64748B">Read State</text>
+    <line x1="918" y1="552" x2="942" y2="552" stroke="#34D399" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="948" y="556" font-family="'SF Mono',monospace" font-size="7" fill="#64748B">IPFS Pin/Fetch</text>
+    <line x1="1032" y1="552" x2="1056" y2="552" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="1062" y="556" font-family="'SF Mono',monospace" font-size="7" fill="#64748B">Submit TX</text>
+    <line x1="1112" y1="552" x2="1136" y2="552" stroke="#A78BFA" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="1142" y="556" font-family="'SF Mono',monospace" font-size="7" fill="#64748B">LLM</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="600" y="592" font-family="'SF Mono',monospace" font-size="8" fill="#334155" text-anchor="middle" letter-spacing="1">DRACHMA PROTOCOL  ·  AUTONOMOUS MULTI-CURRENCY YIELD VAULT  ·  BUILT ON ARC</text></svg>
