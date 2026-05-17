@@ -1,0 +1,18 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install dependencies first for layer caching
+COPY agent/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy agent source
+COPY agent/ .
+
+# Non-root user for security
+RUN useradd --create-home drachma
+USER drachma
+
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "drachma_agent.py"]
