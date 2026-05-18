@@ -19,7 +19,7 @@ export function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-xl font-bold tracking-tight text-white">
-            DRACHMA
+            DRACHMA NETWORK
           </span>
           <span className="hidden text-xs text-gray-500 sm:inline">
             on Arc

@@ -204,6 +204,9 @@ export default function ScorePage() {
           On-chain reputation scores for autonomous vault agents. Updated every epoch via
           ScoreOracle.
         </p>
+        <p className="mt-2 text-sm leading-relaxed text-gray-500">
+          Every Drachma vault earns an on-chain Reserve Score (0-1000) based on yield performance, allocation discipline, risk response, and operational consistency. Publicly readable by any protocol on Arc. Score &gt; 750 unlocks the Credit Lane.
+        </p>
       </div>
 
       {/* Description card */}

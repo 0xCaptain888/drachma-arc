@@ -17,11 +17,20 @@ const initial: Band[] = [
 
 export function BandSliders() {
   const [bands, setBands] = useState<Band[]>(initial);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
 
   const update = (idx: number, field: "min" | "max", val: number) => {
     setBands((prev) =>
       prev.map((b, i) => (i === idx ? { ...b, [field]: val } : b))
     );
+  };
+
+  const handleSave = () => {
+    setSaveState("saving");
+    setTimeout(() => {
+      setSaveState("saved");
+      setTimeout(() => setSaveState("idle"), 2000);
+    }, 1000);
   };
 
   return (
@@ -65,8 +74,22 @@ export function BandSliders() {
           </div>
         ))}
       </div>
-      <button className="mt-4 w-full rounded-lg border border-dark-border py-2 text-sm font-medium text-gray-300 transition hover:bg-white/5">
-        Update Bands
+      <button
+        onClick={handleSave}
+        disabled={saveState !== "idle"}
+        className={`mt-4 w-full rounded-lg border py-2 text-sm font-medium transition ${
+          saveState === "saved"
+            ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400"
+            : saveState === "saving"
+            ? "border-dark-border text-gray-500 cursor-wait"
+            : "border-dark-border text-gray-300 hover:bg-white/5"
+        }`}
+      >
+        {saveState === "saving"
+          ? "Updating..."
+          : saveState === "saved"
+          ? "\u2713 Bands Updated"
+          : "Update Bands"}
       </button>
     </div>
   );

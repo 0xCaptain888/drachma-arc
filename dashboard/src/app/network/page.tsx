@@ -184,6 +184,9 @@ export default function NetworkPage() {
         <p className="mt-1 text-sm text-gray-400">
           {registeredVaults} vaults. One network. Every agent makes all agents smarter.
         </p>
+        <p className="mt-2 text-sm leading-relaxed text-gray-500">
+          When multiple Drachma vaults independently detect the same market anomaly, a ConsensusReached event fires on Arc — and all agents respond within 30 seconds. No single point of failure. No single point of data.
+        </p>
       </div>
 
       {/* Stats row */}

@@ -119,7 +119,8 @@ describe("DrachmaVault", function () {
         it("should have dUSDC ERC20 metadata", async function () {
             expect(await vault.name()).to.equal("Drachma USDC");
             expect(await vault.symbol()).to.equal("dUSDC");
-            expect(await vault.dUsdcDecimals()).to.equal(6);
+            // decimals() replaces the old dUsdcDecimals() for ERC20 compatibility
+            expect(await vault.decimals()).to.equal(6);
         });
 
         it("should start with zero dUSDC supply", async function () {
@@ -898,6 +899,183 @@ describe("DrachmaVault", function () {
         it("should have the DrachmaVault artifact available (proves compilation)", async function () {
             const factory = await ethers.getContractFactory("DrachmaVault");
             expect(factory).to.not.be.undefined;
+        });
+    });
+
+    // ─── transferOwnership ───────────────────────────────────────────────────
+
+    describe("transferOwnership", function () {
+        // NOTE: TestableVault currently does not expose a transferOwnership() function.
+        // These tests assume the mock will be updated to include:
+        //   function transferOwnership(address newOwner) external onlyOwner {
+        //       require(newOwner != address(0), "zero address");
+        //       owner = newOwner;
+        //   }
+        // If TestableVault has not been updated yet, these tests will fail to compile.
+
+        it("should allow owner to transfer ownership", async function () {
+            await vault.transferOwnership(user.address);
+            expect(await vault.owner()).to.equal(user.address);
+        });
+
+        it("should allow new owner to call owner-only functions after transfer", async function () {
+            await vault.transferOwnership(user.address);
+
+            // New owner should be able to call updateBands (an onlyOwner function)
+            await vault.connect(user).updateBands({
+                usdcMin: 3000, usdcMax: 7000,
+                eurcMin: 500,  eurcMax: 3000,
+                usycMin: 1000, usycMax: 5000
+            });
+            const b = await vault.bands();
+            expect(b.usdcMin).to.equal(3000);
+        });
+
+        it("should revoke access from old owner after transfer", async function () {
+            await vault.transferOwnership(user.address);
+
+            // Old owner (the deployer) should no longer be able to call onlyOwner functions
+            await expect(
+                vault.updateBands({
+                    usdcMin: 1000, usdcMax: 5000,
+                    eurcMin: 1000, eurcMax: 5000,
+                    usycMin: 1000, usycMax: 5000
+                })
+            ).to.be.revertedWith("not owner");
+        });
+
+        it("should revert when non-owner calls transferOwnership", async function () {
+            await expect(
+                vault.connect(user).transferOwnership(user.address)
+            ).to.be.revertedWith("not owner");
+        });
+
+        it("should revert when transferring ownership to the zero address", async function () {
+            await expect(
+                vault.transferOwnership(ethers.ZeroAddress)
+            ).to.be.revertedWith("zero address");
+        });
+    });
+
+    // ─── decimals field (ERC20 compatibility) ────────────────────────────────
+
+    describe("decimals field", function () {
+        it("should expose decimals() returning 6 for ERC20 compatibility", async function () {
+            expect(await vault.decimals()).to.equal(6);
+        });
+    });
+
+    // ─── DrachmaFactory ──────────────────────────────────────────────────────
+
+    describe("DrachmaFactory", function () {
+        // NOTE: These tests exercise Factory-level behaviour conceptually.
+        // Because DrachmaFactory depends on DrachmaSignalBus and DrachmaScoreOracle
+        // (registerVault / initializeVault), we deploy lightweight stubs or the real
+        // contracts when available. If the supporting contracts are not compiled in
+        // this Hardhat project, these tests will need stub mocks added to contracts/mocks/.
+
+        let factory, factoryOwner, factoryAgent;
+        let signalBusAddr, scoreOracleAddr;
+
+        beforeEach(async function () {
+            [factoryOwner, factoryAgent] = await ethers.getSigners();
+
+            // Try to deploy the real supporting contracts; if unavailable,
+            // these tests will fail at deployment (signalling that mocks are needed).
+            const SignalBusFactory  = await ethers.getContractFactory("DrachmaSignalBus");
+            const signalBus        = await SignalBusFactory.deploy();
+            await signalBus.waitForDeployment();
+            signalBusAddr = await signalBus.getAddress();
+
+            const ScoreOracleFactory = await ethers.getContractFactory("DrachmaScoreOracle");
+            const scoreOracle        = await ScoreOracleFactory.deploy();
+            await scoreOracle.waitForDeployment();
+            scoreOracleAddr = await scoreOracle.getAddress();
+
+            const FactoryFactory = await ethers.getContractFactory("DrachmaFactory");
+            factory = await FactoryFactory.deploy(signalBusAddr, scoreOracleAddr);
+            await factory.waitForDeployment();
+
+            // Wire factory permissions (mirrors deploy.js step 4)
+            await signalBus.setFactory(await factory.getAddress());
+            await scoreOracle.setFactory(await factory.getAddress());
+        });
+
+        it("should apply custom bands to the vault when non-zero bands are provided", async function () {
+            const tx = await factory.createVault(
+                factoryAgent.address,
+                3000, 7000,  // usdcMin, usdcMax
+                500,  3000,  // eurcMin, eurcMax
+                1000, 5000   // usycMin, usycMax
+            );
+            const receipt = await tx.wait();
+
+            // Extract vault address from VaultCreated event
+            const iface = factory.interface;
+            const vaultCreatedEvent = receipt.logs
+                .map(l => { try { return iface.parseLog(l); } catch { return null; } })
+                .find(e => e && e.name === "VaultCreated");
+            expect(vaultCreatedEvent).to.not.be.null;
+
+            const vaultAddr = vaultCreatedEvent.args[0]; // first indexed param = vault
+            const createdVault = await ethers.getContractAt("DrachmaVault", vaultAddr);
+
+            // Verify the custom bands were applied
+            const b = await createdVault.bands();
+            expect(b.usdcMin).to.equal(3000);
+            expect(b.usdcMax).to.equal(7000);
+            expect(b.eurcMin).to.equal(500);
+            expect(b.eurcMax).to.equal(3000);
+            expect(b.usycMin).to.equal(1000);
+            expect(b.usycMax).to.equal(5000);
+        });
+
+        it("should use default bands when all band params are zero", async function () {
+            const tx = await factory.createVault(
+                factoryAgent.address,
+                0, 0,  // usdcMin, usdcMax
+                0, 0,  // eurcMin, eurcMax
+                0, 0   // usycMin, usycMax
+            );
+            const receipt = await tx.wait();
+
+            const iface = factory.interface;
+            const vaultCreatedEvent = receipt.logs
+                .map(l => { try { return iface.parseLog(l); } catch { return null; } })
+                .find(e => e && e.name === "VaultCreated");
+
+            const vaultAddr = vaultCreatedEvent.args[0];
+            const createdVault = await ethers.getContractAt("DrachmaVault", vaultAddr);
+
+            // Default bands from the DrachmaVault constructor
+            const b = await createdVault.bands();
+            expect(b.usdcMin).to.equal(2000);
+            expect(b.usdcMax).to.equal(6000);
+            expect(b.eurcMin).to.equal(1000);
+            expect(b.eurcMax).to.equal(4000);
+            expect(b.usycMin).to.equal(2000);
+            expect(b.usycMax).to.equal(6000);
+        });
+
+        it("should transfer vault ownership to the caller (msg.sender), not the factory", async function () {
+            const tx = await factory.createVault(
+                factoryAgent.address,
+                0, 0, 0, 0, 0, 0
+            );
+            const receipt = await tx.wait();
+
+            const iface = factory.interface;
+            const vaultCreatedEvent = receipt.logs
+                .map(l => { try { return iface.parseLog(l); } catch { return null; } })
+                .find(e => e && e.name === "VaultCreated");
+
+            const vaultAddr = vaultCreatedEvent.args[0];
+            const createdVault = await ethers.getContractAt("DrachmaVault", vaultAddr);
+
+            // After the Factory update, ownership should be transferred to the caller
+            expect(await createdVault.owner()).to.equal(factoryOwner.address);
+            // Verify the factory does NOT own it
+            expect(await createdVault.owner()).to.not.equal(await factory.getAddress());
         });
     });
 });

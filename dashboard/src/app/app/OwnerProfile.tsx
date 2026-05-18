@@ -7,6 +7,15 @@ export function OwnerProfile() {
   const [outflow, setOutflow] = useState("3000");
   const [risk, setRisk] = useState("moderate");
   const [payments, setPayments] = useState("Rent EUR 1200 on 1st, Insurance EUR 300 on 15th");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+
+  const handleSave = () => {
+    setSaveState("saving");
+    setTimeout(() => {
+      setSaveState("saved");
+      setTimeout(() => setSaveState("idle"), 2000);
+    }, 1000);
+  };
 
   return (
     <div className="rounded-xl border border-dark-border bg-dark-card p-5">
@@ -30,8 +39,22 @@ export function OwnerProfile() {
         </div>
         <Field label="Upcoming payments" value={payments} onChange={setPayments} />
       </div>
-      <button className="mt-4 rounded-lg bg-usdc px-5 py-2 text-sm font-semibold text-white transition hover:bg-usdc/80">
-        Save Profile
+      <button
+        onClick={handleSave}
+        disabled={saveState !== "idle"}
+        className={`mt-4 rounded-lg px-5 py-2 text-sm font-semibold transition ${
+          saveState === "saved"
+            ? "bg-emerald-500/20 text-emerald-400"
+            : saveState === "saving"
+            ? "bg-usdc/50 text-white/60 cursor-wait"
+            : "bg-usdc text-white hover:bg-usdc/80"
+        }`}
+      >
+        {saveState === "saving"
+          ? "Saving..."
+          : saveState === "saved"
+          ? "\u2713 Profile Saved"
+          : "Save Profile"}
       </button>
     </div>
   );

@@ -23,13 +23,24 @@ contract DrachmaFactory {
 
     function createVault(
         address agent,
-        uint16 /*usdcMin*/, uint16 /*usdcMax*/,
-        uint16 /*eurcMin*/, uint16 /*eurcMax*/,
-        uint16 /*usycMin*/, uint16 /*usycMax*/
+        uint16 usdcMin, uint16 usdcMax,
+        uint16 eurcMin, uint16 eurcMax,
+        uint16 usycMin, uint16 usycMax
     ) external returns (address vault) {
         DrachmaVault v = new DrachmaVault(agent, signalBus, scoreOracle);
         vault = address(v);
 
+        // Apply custom bands if provided (non-default check)
+        if (usdcMin > 0 || eurcMin > 0 || usycMin > 0) {
+            v.updateBands(DrachmaVault.AllocationBands(
+                usdcMin, usdcMax, eurcMin, eurcMax, usycMin, usycMax
+            ));
+        }
+
+        // Transfer ownership to the caller
+        v.transferOwnership(msg.sender);
+
+        // Register with SignalBus and ScoreOracle
         DrachmaSignalBus(signalBus).registerVault(vault, agent);
         DrachmaScoreOracle(scoreOracle).initializeVault(vault);
 

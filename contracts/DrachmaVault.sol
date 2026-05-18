@@ -31,7 +31,7 @@ contract DrachmaVault {
     // --- ERC20 (dUSDC) State ---
     string  public name     = "Drachma USDC";
     string  public symbol   = "dUSDC";
-    uint8   public constant dUsdcDecimals = 6;
+    uint8   public constant decimals = 6;
 
     uint256 public totalSupply;
     mapping(address => uint256) public balanceOf;
@@ -261,6 +261,11 @@ contract DrachmaVault {
         emit AgentRotated(agent, newAgent);
         agent = newAgent;
         agentVersion++;
+    }
+
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "zero address");
+        owner = newOwner;
     }
 
     // --- View ---

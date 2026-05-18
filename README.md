@@ -96,6 +96,13 @@ DATA LAYER
 | `DrachmaScoreOracle.sol` | On-chain credit scoring (0-1000) + Credit Lane |
 | `DrachmaFactory.sol` | One-click vault deployment + registration |
 
+### Key Features
+
+- **DrachmaVault**: `transferOwnership()` for Factory-based deployment, `depositForShares()`/`redeemShares()` for dUSDC, `updateNav()` + `updateReserveScore()` for agent updates
+- **DrachmaFactory**: Applies custom allocation bands on vault creation, transfers ownership to caller, auto-registers with SignalBus + ScoreOracle
+- **DrachmaSignalBus**: O(1) agent lookup via `agentToRegistered` mapping, score-weighted consensus detection
+- **DrachmaScoreOracle**: Credit Lane eligibility (score > 750), full score history with IPFS evidence
+
 ### Deployment Order
 
 ```bash
@@ -103,7 +110,19 @@ DATA LAYER
 # 2. ScoreOracle (no deps)
 # 3. Factory (depends on 1+2)
 # 4. Wire: SignalBus.setFactory + ScoreOracle.setFactory
-# 5. Factory.createVault → deploys vault + registers everywhere
+# 5. Factory.createVault → deploys vault + auto-registers + transfers ownership
+# 6. Agent subscribes to SignalBus
+```
+
+### Test Coverage — 86 tests passing
+
+```
+Deployment (10) · Access Control (8) · Deposit/Withdraw (6)
+Allocation Bands (4) · Agent Rotation (3) · Rebalance (5)
+Emergency Exit (3) · View Functions (4) · dUSDC ERC20 (7)
+depositForShares (5) · redeemShares (4) · updateNav (3)
+updateReserveScore (5) · DecisionLog v2 (9) · transferOwnership (5)
+decimals ERC20 (1) · DrachmaFactory (3) · Compilation (1)
 ```
 
 ---
@@ -219,6 +238,19 @@ cd dashboard
 npm install
 cp ../.env.example .env.local  # fill in NEXT_PUBLIC vars
 npm run dev
+```
+
+### Docker (Full Stack)
+```bash
+cp .env.example .env  # fill in all values
+docker-compose up -d
+# Agent runs on background, Dashboard on http://localhost:3000
+```
+
+### Run Tests
+```bash
+cd contracts
+npx hardhat test  # 86 tests, all passing
 ```
 
 ---

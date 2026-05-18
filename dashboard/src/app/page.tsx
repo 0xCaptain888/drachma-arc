@@ -54,9 +54,12 @@ export default function DashboardPage() {
 
       {/* Header */}
       <div className="mb-2">
-        <h1 className="text-3xl font-bold tracking-tight">DRACHMA</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Drachma Network</h1>
         <p className="text-sm text-gray-400">
-          Autonomous Stablecoin Reserve Manager on Arc
+          AI Agents Collectively Managing Stablecoin Reserves
+        </p>
+        <p className="mt-1 text-xs text-gray-500">
+          {mockTickerSignals.length} vaults. One network. Every agent makes all agents smarter.
         </p>
       </div>
 
@@ -73,6 +76,7 @@ export default function DashboardPage() {
         <AllocationChart data={allocations} />
         <div className="flex flex-col gap-4">
           <YieldCard yieldAccrued={vault.yieldAccrued} usycApy={market.usycApy} />
+          <DusdcHoldingsCard />
           <NetGainCard gain={vault.netGain} />
           <StatusBadge
             active={vault.agentActive}
@@ -121,6 +125,39 @@ export default function DashboardPage() {
 
       {/* Decision log */}
       <DecisionLogTable entries={mockDecisionLog} compact />
+    </div>
+  );
+}
+
+function DusdcHoldingsCard() {
+  const balance = 1000.842;
+  const navPerShare = 1.000842;
+  const usdValue = 1000.84;
+  const yieldEarned = usdValue - 1000;
+
+  return (
+    <div className="rounded-xl border border-dark-border bg-dark-card p-5">
+      <h3 className="mb-2 text-sm font-medium uppercase tracking-wider text-gray-400">
+        dUSDC Holdings
+      </h3>
+      <div className="grid grid-cols-2 gap-2 text-sm">
+        <div>
+          <span className="text-gray-400">Balance</span>
+          <p className="font-mono font-semibold text-white">{balance.toFixed(6)}</p>
+        </div>
+        <div>
+          <span className="text-gray-400">NAV/share</span>
+          <p className="font-mono font-semibold text-white">{navPerShare.toFixed(6)}</p>
+        </div>
+        <div>
+          <span className="text-gray-400">USD Value</span>
+          <p className="font-mono font-semibold text-white">${usdValue.toFixed(2)}</p>
+        </div>
+        <div>
+          <span className="text-gray-400">Yield earned</span>
+          <p className="font-mono font-semibold text-emerald-400">+${yieldEarned.toFixed(2)}</p>
+        </div>
+      </div>
     </div>
   );
 }

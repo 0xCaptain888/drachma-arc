@@ -44,6 +44,12 @@ async function main() {
   const vaultAddr = await factory.allVaults(0);
   console.log("DrachmaVault v2:", vaultAddr);
 
+  // Subscribe vault to SignalBus
+  console.log("\n5. Subscribing vault to SignalBus...");
+  // Note: In production, this is called by the agent wallet
+  // For demo, we log the command needed
+  console.log(`   Run from agent wallet: signalBus.subscribe(${vaultAddr})`);
+
   console.log("\n--- Deployment Complete ---");
   console.log("SIGNAL_BUS_ADDRESS=" + signalBusAddr);
   console.log("SCORE_ORACLE_ADDRESS=" + scoreOracleAddr);
@@ -54,6 +60,12 @@ async function main() {
   console.log(`npx hardhat verify --network arc_testnet ${signalBusAddr}`);
   console.log(`npx hardhat verify --network arc_testnet ${scoreOracleAddr}`);
   console.log(`npx hardhat verify --network arc_testnet ${factoryAddr} "${signalBusAddr}" "${scoreOracleAddr}"`);
+
+  console.log("\n--- .env Configuration ---");
+  console.log(`VAULT_ADDRESS=${vaultAddr}`);
+  console.log(`SIGNAL_BUS_ADDRESS=${signalBusAddr}`);
+  console.log(`SCORE_ORACLE_ADDRESS=${scoreOracleAddr}`);
+  console.log(`FACTORY_ADDRESS=${factoryAddr}`);
 }
 
 main().catch((error) => {
