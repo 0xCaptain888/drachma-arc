@@ -39,28 +39,49 @@ CIRCLE_MCP_URL = os.getenv("CIRCLE_MCP_URL", "https://mcp.circle.com")
 
 
 def fetch_market_data_real() -> dict:
-    """Use Claude + Circle MCP Server to fetch real market data."""
+    """
+    Use Claude + Circle MCP Server to fetch real market data.
+    Falls back to conservative estimates if MCP unavailable.
+    """
     if not HAS_ANTHROPIC or not os.getenv("ANTHROPIC_API_KEY"):
         return _fallback_market_data()
 
     try:
         client = Anthropic()
-        response = client.messages.create(
+        response = client.beta.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=600,
+            # Circle MCP Server integration for real on-chain data
+            tools=[{
+                "type": "mcp",
+                "server_label": "circle",
+                "server_url": CIRCLE_MCP_URL,
+                # Available tools from Circle MCP:
+                # - get_stablefx_rate: USDC/EURC spot rate
+                # - get_usyc_nav: USYC current NAV per share
+                # - get_usyc_apy: USYC 30-day APY
+                # - get_arc_gas_price: current Arc gas price
+            }],
             messages=[{
                 "role": "user",
-                "content": """Fetch current stablecoin market data:
-1. USDC/EURC exchange rate (use ECB EUR/USD reference)
-2. USYC approximate NAV per share (tokenized T-bill fund)
-3. USYC 30-day APY estimate
-4. Estimated USDC/EURC bid-ask spread in basis points
+                "content": """Fetch the following real-time data from Circle's platform:
+1. Current USDC/EURC exchange rate from StableFX oracle on Arc testnet
+2. Current USYC NAV per share (in USDC, 6 decimals)
+3. USYC 30-day annualized APY
+4. Current StableFX USDC/EURC bid-ask spread in basis points
 
-Return ONLY valid JSON:
-{"usdc_eurc_rate": <float>, "usyc_nav_per_share": <float>, "usyc_apy_30d": <float>, "stablfx_spread_bps": <int>, "data_timestamp": "<ISO>", "source": "circle_mcp"}"""
+Return ONLY a JSON object with these exact keys:
+{"usdc_eurc_rate": <float>, "usyc_nav_per_share": <float>, "usyc_apy_30d": <float>, "stablfx_spread_bps": <int>, "data_timestamp": "<ISO 8601>", "source": "circle_mcp"}"""
             }]
         )
-        raw = response.content[0].text.strip()
+
+        # Extract text content from response
+        text = ""
+        for block in response.content:
+            if hasattr(block, 'text'):
+                text += block.text
+
+        raw = text.strip()
         if raw.startswith("```"):
             raw = raw.split("```")[1]
             if raw.startswith("json"): raw = raw[4:]

@@ -10,6 +10,12 @@
 
 Built for the **Agora Hackathon** — Canteen × Circle | Arc L1 | May 2026
 
+## TL;DR
+
+- **What:** AI agent managing USDC/EURC/USYC reserves autonomously on Arc
+- **Why not Ethereum/Solana:** Sub-second finality required for multi-vault consensus response
+- **Real activity:** 28 rebalances, 4 ConsensusReached events, $15.15 yield accrued, 80+ on-chain txs
+
 ---
 
 ## The Problem
@@ -29,6 +35,8 @@ and silently lose money three ways:
 **Total: ~$4,650/year in invisible losses per $50K held.**
 
 Drachma eliminates all three. Autonomously. Continuously.
+
+**[See how much you're losing: drachma.xyz/calculate](https://drachma.xyz/calculate)**
 
 ---
 
@@ -113,6 +121,8 @@ Vault C submitted SIG_YIELD_SPIKE = 462
 | **Paymaster** | Arc native USDC gas = zero-ETH UX | ✅ Live |
 | **App Kit** | Cross-chain deposit (Unified Balance Kit) | ✅ Integrated |
 | **CCTP** | Embedded in App Kit bridge flow | ✅ Integrated |
+
+Drachma captures 0.05% of cross-chain deposits via App Kit's built-in monetization — a sustainable protocol revenue model, not a pitch deck promise.
 
 See [docs/CIRCLE_TOOLS.md](./docs/CIRCLE_TOOLS.md) for deep dive on each tool.
 

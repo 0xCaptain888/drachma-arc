@@ -82,7 +82,7 @@ async def listen_for_consensus(
     Parameters
     ----------
     ws_url : str
-        WebSocket RPC endpoint (e.g. "wss://rpc-testnet.arcprotocol.xyz/ws").
+        WebSocket RPC endpoint (e.g. "wss://rpc.testnet.arc.network").
     bus_address : str
         DrachmaSignalBus contract address (checksummed or lowercase).
     callback : async callable
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     load_dotenv()
     _logging.basicConfig(level=_logging.INFO)
 
-    WS_URL  = os.getenv("ARC_RPC_WS", "wss://rpc-testnet.arcprotocol.xyz/ws")
+    WS_URL  = os.getenv("ARC_RPC_WS", "wss://rpc.testnet.arc.network")
     BUS_ADR = os.getenv("SIGNAL_BUS_ADDRESS", "0x0000000000000000000000000000000000000000")
 
     async def _demo_callback(signal_type: int, avg_value: int, vault_count: int):
