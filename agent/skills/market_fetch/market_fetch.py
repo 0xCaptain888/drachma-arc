@@ -82,12 +82,59 @@ def _fallback_market_data() -> dict:
     }
 
 
+def fetch_macro_data() -> dict:
+    """
+    Fetch ECB/Fed rates and EUR/USD implied vol.
+    Uses Claude's knowledge + publicly available data.
+    In production: integrate FRED API and CBOE options data.
+    """
+    if not HAS_ANTHROPIC or not os.getenv("ANTHROPIC_API_KEY"):
+        return _fallback_macro_data()
+
+    try:
+        client = Anthropic()
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=300,
+            messages=[{
+                "role": "user",
+                "content": """Current macro data (use your most recent knowledge):
+1. ECB deposit facility rate (%)
+2. Fed funds effective rate (%)
+3. EUR/USD 1-week implied volatility (approximate %)
+4. Any major upcoming ECB or Fed events in next 7 days
+
+Return ONLY valid JSON:
+{"ecb_rate": <float>, "fed_rate": <float>, "eur_usd_1w_vol": <float>, "upcoming_events": [{"date": "YYYY-MM-DD", "event": "..."}]}"""
+            }]
+        )
+        raw = response.content[0].text.strip()
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"): raw = raw[4:]
+        return json.loads(raw.strip())
+    except Exception as e:
+        print(f"[Macro] Macro data fetch failed: {e}. Using fallback.")
+        return _fallback_macro_data()
+
+
+def _fallback_macro_data() -> dict:
+    """Conservative fallback for macro data."""
+    return {
+        "ecb_rate": 2.75,
+        "fed_rate": 4.5,
+        "eur_usd_1w_vol": 5.2,
+        "upcoming_events": []
+    }
+
+
 def fetch_market_data(vault_state: dict = None, owner_profile: dict = None, prev_snapshot=None) -> MarketSnapshot:
     """Main entry point. Priority: Circle MCP → fallback."""
     vault_state = vault_state or {}
     owner_profile = owner_profile or {}
 
     circle_data = fetch_market_data_real()
+    macro_data = fetch_macro_data()
 
     stablfx_spread = circle_data.get("stablfx_spread_bps", 20)
     eurc_spread = stablfx_spread + 5
@@ -99,6 +146,10 @@ def fetch_market_data(vault_state: dict = None, owner_profile: dict = None, prev
         usdc_eurc_rate=circle_data.get("usdc_eurc_rate", 1.08),
         usyc_nav_per_share=circle_data.get("usyc_nav_per_share", 1.0),
         usyc_apy_30d=circle_data.get("usyc_apy_30d", 4.0),
+        ecb_rate=macro_data.get("ecb_rate", 2.75),
+        fed_rate=macro_data.get("fed_rate", 4.5),
+        eur_usd_1w_implied_vol=macro_data.get("eur_usd_1w_vol", 5.2),
+        upcoming_macro_events=macro_data.get("upcoming_events", []),
         stablfx_spread_bps=stablfx_spread,
         eurc_secondary_spread_bps=eurc_spread,
         depeg_alerts=depeg_alerts,
