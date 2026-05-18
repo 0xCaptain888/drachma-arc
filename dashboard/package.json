@@ -13,7 +13,9 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.12.0",
-    "viem": "^2.21.0"
+    "viem": "^2.21.0",
+    "@circle-cfx/app-kit": "^0.1.0",
+    "@circle-cfx/app-kit-adapters-viem": "^0.1.0"
   },
   "devDependencies": {
     "@types/node": "^20",
