@@ -14,10 +14,10 @@ export const IPFS_GATEWAY =
   process.env.NEXT_PUBLIC_IPFS_GATEWAY || "https://gateway.pinata.cloud/ipfs";
 
 export const VAULT_ADDRESS = (process.env.NEXT_PUBLIC_VAULT_ADDRESS ||
-  "0x0000000000000000000000000000000000000001") as `0x${string}`;
+  "0xD3D5b81b28b51aDdc5A3a06231C5d0ED782E1995") as `0x${string}`;
 
 export const ARC_RPC =
-  process.env.NEXT_PUBLIC_ARC_RPC || "https://rpc.arc.drachma.local";
+  process.env.NEXT_PUBLIC_ARC_RPC || "https://rpc.testnet.arc.network";
 
 export const VAULT_ABI = [
   // --- View functions ---
@@ -262,13 +262,13 @@ export const VAULT_ABI = [
 // ─── Signal Bus ──────────────────────────────────────────────────────────────
 
 export const SIGNAL_BUS_ADDRESS =
-  process.env.NEXT_PUBLIC_SIGNAL_BUS_ADDRESS || "0x0000000000000000000000000000000000000000";
+  process.env.NEXT_PUBLIC_SIGNAL_BUS_ADDRESS || "0xE66b90e5be9Fd497e2b0c57FF4a9F8A3b32f3Ff6";
 
 export const SCORE_ORACLE_ADDRESS =
-  process.env.NEXT_PUBLIC_SCORE_ORACLE_ADDRESS || "0x0000000000000000000000000000000000000000";
+  process.env.NEXT_PUBLIC_SCORE_ORACLE_ADDRESS || "0xF1d8e224755c609AdF735CaEd3c45CEC0391337B";
 
 export const FACTORY_ADDRESS =
-  process.env.NEXT_PUBLIC_FACTORY_ADDRESS || "0x0000000000000000000000000000000000000000";
+  process.env.NEXT_PUBLIC_FACTORY_ADDRESS || "0x00aa544Cd58Cb785D7B70EB1805cFF2900008133";
 
 export const SIGNAL_BUS_ABI = [
   // read functions
