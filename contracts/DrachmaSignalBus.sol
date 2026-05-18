@@ -41,6 +41,7 @@ contract DrachmaSignalBus {
     mapping(address => bool)    public registeredVaults;
     mapping(address => address) public vaultToAgent;
     mapping(address => bool)    public agentToRegistered;
+    mapping(address => address) public agentToVault;
 
     Signal[]         public signals;
     ConsensusEvent[] public consensusHistory;
@@ -71,6 +72,7 @@ contract DrachmaSignalBus {
         registeredVaults[vault] = true;
         vaultToAgent[vault] = agent;
         agentToRegistered[agent] = true;
+        agentToVault[agent] = vault;
         emit VaultRegistered(vault, agent);
     }
 
@@ -80,6 +82,7 @@ contract DrachmaSignalBus {
         if (!isSubscriber[vault]) {
             isSubscriber[vault] = true;
             subscribers.push(vault);
+            agentToVault[msg.sender] = vault;
             emit SubscriberAdded(vault);
         }
     }
@@ -179,9 +182,6 @@ contract DrachmaSignalBus {
     function registeredVaultCount() external view returns (uint256) { return subscribers.length; }
 
     function _agentToVault(address agent) internal view returns (address) {
-        for (uint i = 0; i < subscribers.length; i++) {
-            if (vaultToAgent[subscribers[i]] == agent) return subscribers[i];
-        }
-        return address(0);
+        return agentToVault[agent];
     }
 }

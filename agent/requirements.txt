@@ -1,6 +1,9 @@
-anthropic>=0.39.0
+# Drachma Agent v2 — Python Dependencies
+# Tested on Python 3.11+
+anthropic>=0.25.0
 web3>=6.15.0
 httpx>=0.27.0
-python-dotenv>=1.0.0
-aiohttp>=3.9.0
 websockets>=12.0
+aiohttp>=3.9.0
+python-dotenv>=1.0.0
+dataclasses-json>=0.6.4

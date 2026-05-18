@@ -54,3 +54,7 @@ docker-compose.override.yml
 *.tgz
 *.tar.gz
 .vercel
+contracts/.env
+contracts/node_modules/
+contracts/cache/
+contracts/artifacts/

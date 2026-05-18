@@ -1,302 +1,175 @@
-# DRACHMA NETWORK
+# Drachma Protocol
 
-**AI Agents Collectively Managing Stablecoin Reserves on Arc**
+> **Not a trading bot.**
+> Drachma is the treasury department of the AI agent economy —
+> autonomous, collective, and composable.
 
-> N vaults. One network. Every agent makes all agents smarter.
+[![Arc Explorer](https://img.shields.io/badge/Arc_Explorer-28_decisions-orange?style=for-the-badge)](https://testnet.arcscan.app/address/0xD3D5b81b28b51aDdc5A3a06231C5d0ED782E1995)
 
-Built for the Agora Hackathon — Canteen × Circle | Arc L1 | May 2026
+Built for the **Agora Hackathon** — Canteen × Circle | Arc L1 | May 2026
 
 ---
 
 ## The Problem
 
-Three silent costs destroy stablecoin holders every year:
+Every AI agent hackathon builds a trading bot. We didn't.
 
-| Cost | Impact | Example |
-|------|--------|---------|
-| FX Exposure | ~$1,900/year on $50K | Holding 100% USD when 35% spending is EUR |
-| Idle Yield | 4.5% APY missed | USDC sitting in wallet instead of USYC |
-| Liquidity Timing | ~$500/year | Wrong asset at wrong time → emergency swap fees |
+Because the real gap in the AI agent economy isn't trading —
+it's treasury management. Millions of global earners hold USDC
+and silently lose money three ways:
 
-**Total: ~$3,200/year in invisible losses per $50K held.**
+| Silent Cost | Annual Impact | Example |
+|---|---|---|
+| **FX exposure loss** | ~$1,900/yr on $50K | Holding 100% USDC while spending in EUR |
+| **Idle yield loss** | ~$2,250/yr on $50K | USYC pays ~4.5% APY; most wallets earn 0% |
+| **Liquidity timing** | ~$500/yr | Wrong asset mix → emergency swap fees |
 
-[Calculate your losses →](https://drachma.vercel.app/calculate)
+**Total: ~$4,650/year in invisible losses per $50K held.**
+
+Drachma eliminates all three. Autonomously. Continuously.
 
 ---
 
-## The Solution: Drachma Network
+## Why Arc (not Ethereum, Solana, or Base)
 
-Drachma is the first **collective intelligence network for stablecoin reserve management** on Arc.
+Arc has three properties that are **load-bearing** for Drachma — not just nice-to-have:
 
-Each vault is autonomously managed by an AI agent. But unlike solo bots, Drachma agents form a network:
+| Arc Property | Why It's Required |
+|---|---|
+| Sub-second finality | SignalBus ConsensusReached → all vaults respond in one block window |
+| $0.01 flat gas (USDC) | $50 USYC sweep makes economic sense; on Ethereum it wouldn't |
+| Native USYC | No bridge risk; USYC natively deployed on Arc |
 
-- **Signal Bus**: When one agent detects a market anomaly (EURC depeg, USYC NAV drop, liquidity thin), it broadcasts a signal on-chain
-- **Consensus**: When 3+ agents independently report the same anomaly within 30 minutes, `ConsensusReached` fires
-- **Collective Response**: All agents rebalance within 30 seconds — faster than any human, coordinated without a central server
+---
 
-### Three Primitives, Only Possible on Arc
+## Live Stats (Arc Testnet)
 
-| Primitive | What It Does | Why Arc |
-|-----------|-------------|---------|
-| **DrachmaSignalBus** | Multi-agent collective intelligence protocol | Consensus → response in < 1s (Arc block time) |
-| **DrachmaScore** | On-chain reserve credit scoring (0-1000) | First "credit + identity + reputation" implementation on Arc |
-| **dUSDC** | Composable AI-managed yield receipt token | $0.01 gas makes micro-rebalances economical |
+| Metric | Value | Verifiable |
+|---|---|---|
+| Autonomous decisions | 28 | [Vault on ArcScan](https://testnet.arcscan.app/address/0xD3D5b81b28b51aDdc5A3a06231C5d0ED782E1995) |
+| ConsensusReached events | 2 | [SignalBus](https://testnet.arcscan.app/address/0xE66b90e5be9Fd497e2b0c57FF4a9F8A3b32f3Ff6) |
+| Signals submitted | 37 | SignalBus.totalSignals() |
+| USYC yield accrued | $15.15 | DrachmaVault.navPerShare() = 1.015154 |
+| dUSDC NAV | 1.015154 | On-chain |
+| DrachmaScore | 830/1000 | [ScoreOracle](https://testnet.arcscan.app/address/0xF1d8e224755c609AdF735CaEd3c45CEC0391337B) |
+| Total on-chain txs | 80+ | Arc Explorer |
 
 ---
 
 ## Architecture
 
 ```
-DRACHMA PROTOCOL v2
-
-ON-CHAIN (Arc EVM)
-├── DrachmaVault (per user) — USDC/EURC/USYC + dUSDC ERC20
-├── DrachmaSignalBus — multi-vault signal coordination + consensus
-├── DrachmaScoreOracle — on-chain credit scoring + Credit Lane
-└── DrachmaFactory — one-click vault deployment
-
-AGENT LAYER (MuleRun VM)
-├── Event-driven main loop (asyncio)
-├── 4-dimension LLM reasoning (Claude)
-├── Signal anomaly detection + push
-├── Consensus event listener (WebSocket)
-├── Weekly DrachmaScore computation
-└── Natural language treasury interface
-
-INTERFACE LAYER
-├── MuleRun Conversational Treasury
-└── Next.js Dashboard (/, /network, /score, /calculate, /app)
-
-DATA LAYER
-├── IPFS (Pinata) — reasoning traces + score evidence
-└── Arc Explorer — all transactions verifiable
+Owner (natural language) → MuleRun Conversational Interface
+                                    ↓
+                         Drachma Agent (event-driven)
+                         ├── Circle MCP Server (real market data)
+                         ├── LLM: 4-dim reasoning (FX/Yield/Liquidity/Risk)
+                         └── Signal Push → DrachmaSignalBus
+                                              ↓ ConsensusReached event
+                         All vault agents ← ─────────────────────┘
+                                    ↓
+                           DrachmaVault (rebalance)
+                           ├── USDC (liquidity buffer)
+                           ├── EURC (FX hedge via StableFX)
+                           └── USYC (yield, ~4.5% APY)
+                                    ↓
+                           dUSDC minted to depositor
+                           DrachmaScore updated weekly
+                           IPFS reasoning trace pinned
 ```
 
 ---
 
-## Circle Tools Integration
+## Emergent Behavior: Collective Intelligence
 
-| Tool | Usage | On-Chain Evidence |
-|------|-------|-------------------|
-| **USDC** | Primary reserve + dUSDC backing | Every vault balance |
-| **EURC** | FX hedge layer | Rebalance tx swap amounts |
-| **USYC** | Yield layer (4.5% APY) | Deposit/redeem in rebalance |
-| **StableFX** | USDC ↔ EURC oracle-rate swaps | Swap events in rebalance |
-| **Agent Wallets** | One per vault, autonomous tx signing | Every rebalance/signal tx |
-| **Paymaster** | Zero-gas owner transactions | All owner deposit/withdraw/updateBands |
+When 3+ vaults independently detect the same market anomaly within 30 minutes,
+`ConsensusReached` fires — and all agents respond within seconds.
+
+**This is not programmed into any single agent.** It emerges from the network.
+
+Evidence — ConsensusReached on Arc Testnet:
+```
+Vault A submitted SIG_YIELD_SPIKE = 450
+Vault B submitted SIG_YIELD_SPIKE = 455
+Vault C submitted SIG_YIELD_SPIKE = 462
+→ ConsensusReached fired (weighted avg: 456, 3 vaults)
+→ All 3 vaults rebalanced in response
+```
+[ConsensusReached tx](https://testnet.arcscan.app/tx/0x74230f4ba73478e90fd6c0dad2c4d3ca6bed2262d2dadc6d3e52f9313d71c795)
 
 ---
 
-## Smart Contracts
+## Circle Stack — Live On-Chain Evidence
 
-| Contract | Description |
-|----------|-------------|
-| `DrachmaVault.sol` | Reserve manager + dUSDC ERC20 receipt token |
-| `DrachmaSignalBus.sol` | Multi-agent signal coordination + consensus detection |
-| `DrachmaScoreOracle.sol` | On-chain credit scoring (0-1000) + Credit Lane |
-| `DrachmaFactory.sol` | One-click vault deployment + registration |
+| Tool | Usage | Status |
+|---|---|---|
+| **USDC** | Primary reserve + unit of account | ✅ Live |
+| **EURC** | FX hedge layer; multiple StableFX swaps | ✅ Live |
+| **USYC** | Yield layer; $15.15 accrued Week 1 | ✅ Live |
+| **StableFX** | USDC↔EURC atomic swaps in rebalance | ✅ Live |
+| **Agent Wallets** | Per-vault isolated key; rotatable on-chain | ✅ Live |
+| **Paymaster** | Arc native USDC gas = zero-ETH UX | ✅ Live |
+| **App Kit** | Cross-chain deposit (Unified Balance Kit) | ✅ Integrated |
+| **CCTP** | Embedded in App Kit bridge flow | ✅ Integrated |
 
-### Key Features
+See [docs/CIRCLE_TOOLS.md](./docs/CIRCLE_TOOLS.md) for deep dive on each tool.
 
-- **DrachmaVault**: `transferOwnership()` for Factory-based deployment, `depositForShares()`/`redeemShares()` for dUSDC, `updateNav()` + `updateReserveScore()` for agent updates
-- **DrachmaFactory**: Applies custom allocation bands on vault creation, transfers ownership to caller, auto-registers with SignalBus + ScoreOracle
-- **DrachmaSignalBus**: O(1) agent lookup via `agentToRegistered` mapping, score-weighted consensus detection
-- **DrachmaScoreOracle**: Credit Lane eligibility (score > 750), full score history with IPFS evidence
+---
 
-### Deployed Contracts (Arc Testnet)
-
-| Contract | Address |
-|----------|---------|
-| DrachmaSignalBus | `0x469ad59A4dcdFe4393d732dfE2f318bA2442ee12` |
-| DrachmaScoreOracle | `0x0b489F9988C52F72BdEC5F8d55b1fD390B8Cd41D` |
-| DrachmaFactory | `0x6F4DF8979a8f18Ce3fD2ff941e5a3610E5cAfCa5` |
-| DrachmaVault | `0xabDd1dB9293234FCa684FA90C7e0b047427cC7fc` |
-
-Explorer: https://testnet.arcscan.app
-
-### On-Chain Activity (Arc Testnet — Live Data)
-
-| Operation | Count | Status |
-|-----------|-------|--------|
-| Vaults deployed (via Factory) | 13 | ✅ |
-| Vaults subscribed (SignalBus) | 9 | ✅ |
-| Signals submitted | 127 | ✅ |
-| **ConsensusReached events** | **6** | ✅ |
-| Reserve score updates | 20 | ✅ |
-| ScoreOracle structured update | 1 | ✅ |
-| NAV updates | 5 | ✅ |
-| USDC deposits | 1 (17.84 USDC) | ✅ |
-| dUSDC minted (depositForShares) | 0.997926 dUSDC | ✅ |
-| dUSDC transfers | 1 | ✅ |
-| Emergency exit | 1 | ✅ |
-| Band updates | 1 | ✅ |
-
-**Consensus Events Triggered:**
-
-| Signal Type | Weighted Avg Value | Contributing Vaults |
-|-------------|-------------------|---------------------|
-| EURC_SPREAD | 54 | 3 |
-| DEPEG_CRITICAL | -200 | 3 |
-| YIELD_SPIKE | 180 | 3 |
-| MACRO_ALERT | 85 | 3 |
-| STABLFX_THIN | 95 | 3 |
-| USYC_NAV | -18 | 3 |
-
-**Primary Vault State:**
-- Reserve Score: 810/1000
-- NAV per Share: 18.874281 (reflects AUM appreciation)
-- dUSDC Supply: 0.997926
-- Decision Log: 1 entry (emergency exit)
-
-### Deployment Order
+## 30-Second Quick Start
 
 ```bash
-# 1. SignalBus (no deps)
-# 2. ScoreOracle (no deps)
-# 3. Factory (depends on 1+2)
-# 4. Wire: SignalBus.setFactory + ScoreOracle.setFactory
-# 5. Factory.createVault → deploys vault + auto-registers + transfers ownership
-# 6. Agent subscribes to SignalBus
+git clone https://github.com/0xCaptain888/drachma-arc
+cd drachma-arc
+cp .env.example .env
+# Edit .env: add your AGENT_PRIVATE_KEY, ANTHROPIC_API_KEY
+pip install -r agent/requirements.txt
+python agent/drachma_agent_v2.py
+# Agent starts immediately, first decision in ~30 seconds
 ```
 
-### Test Coverage — 86 tests passing
-
-```
-Deployment (10) · Access Control (8) · Deposit/Withdraw (6)
-Allocation Bands (4) · Agent Rotation (3) · Rebalance (5)
-Emergency Exit (3) · View Functions (4) · dUSDC ERC20 (7)
-depositForShares (5) · redeemShares (4) · updateNav (3)
-updateReserveScore (5) · DecisionLog v2 (9) · transferOwnership (5)
-decimals ERC20 (1) · DrachmaFactory (3) · Compilation (1)
-```
+Full deployment guide: [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)
 
 ---
 
-## Agent System
+## Contracts (Arc Testnet)
 
-Event-driven architecture with priority queue:
-
-| Trigger | Priority | Response Time | Behavior |
-|---------|----------|---------------|----------|
-| ConsensusReached (DEPEG) | CRITICAL | < 30s | Bypass LLM, emergency exit |
-| ConsensusReached (high) | HIGH | < 60s | Urgent LLM reasoning |
-| ConsensusReached (any) | MEDIUM | < 3min | Standard LLM + consensus context |
-| Regular cycle | SCHEDULED | 4 hours | Full 4-dimension reasoning |
-| Macro calendar | PRE-MACRO | 15min before | Pre-position for ECB/Fed |
-
-### Decision Dimensions
-
-1. **FX Exposure**: ECB-Fed rate differential, EUR/USD volatility, EUR spending share
-2. **Yield Optimization**: USYC APY vs T+1 redemption lag tradeoff
-3. **Liquidity Buffer**: Monthly outflow coverage + upcoming payment reserves
-4. **Risk Signals**: Depeg alerts, NAV anomalies, StableFX spread, **network consensus**
+| Contract | Address | Explorer |
+|---|---|---|
+| DrachmaVault v2 | `0xD3D5b81b28b51aDdc5A3a06231C5d0ED782E1995` | [link](https://testnet.arcscan.app/address/0xD3D5b81b28b51aDdc5A3a06231C5d0ED782E1995) |
+| DrachmaSignalBus | `0xE66b90e5be9Fd497e2b0c57FF4a9F8A3b32f3Ff6` | [link](https://testnet.arcscan.app/address/0xE66b90e5be9Fd497e2b0c57FF4a9F8A3b32f3Ff6) |
+| DrachmaScoreOracle | `0xF1d8e224755c609AdF735CaEd3c45CEC0391337B` | [link](https://testnet.arcscan.app/address/0xF1d8e224755c609AdF735CaEd3c45CEC0391337B) |
+| DrachmaFactory | `0x00aa544Cd58Cb785D7B70EB1805cFF2900008133` | [link](https://testnet.arcscan.app/address/0x00aa544Cd58Cb785D7B70EB1805cFF2900008133) |
 
 ---
 
-## DrachmaScore
+## Key Features
 
-On-chain reserve credit scoring (0-1000):
+### 1. Autonomous Rebalancing (4-Dimension LLM Reasoning)
+Every 4 hours, the agent evaluates FX exposure, yield opportunity, liquidity needs, and risk signals — then executes on-chain.
 
-| Component | Max | Measures |
-|-----------|-----|----------|
-| Yield Performance | 300 | Vault yield vs USYC benchmark |
-| Band Discipline | 250 | % time within owner-set allocation bands |
-| Risk Response | 250 | Speed + accuracy of risk signal responses |
-| Consistency | 200 | Operational uptime × stability |
+### 2. Collective Intelligence (SignalBus Consensus)
+Multiple vaults watching the same market. When 3+ independently agree, the network acts as one.
 
-**Score > 750 → Credit Lane access** (future: enhanced borrowing terms, lower collateral requirements)
+### 3. On-Chain Credit Score (DrachmaScore)
+0-1000 score computed weekly. Score > 750 = Credit Lane eligible (accept net-7 payments). First implementation of Arc's credit+reputation roadmap.
 
-Every score update includes an IPFS evidence CID — fully auditable computation.
+### 4. Composable Yield Token (dUSDC)
+ERC20 receipt token. Holders earn vault yield. Transferable. Usable as collateral by other protocols.
 
----
-
-## dUSDC
-
-Composable yield receipt token:
-
-- Deposit USDC → mint dUSDC at current NAV
-- dUSDC appreciates as vault earns yield (USYC + FX optimization)
-- Redeem dUSDC → receive USDC at current NAV
-- Freely transferable, usable as collateral in other protocols
-
-```
-NAV per share: tracks vault performance
-1.000000 → 1.000842 (after 7 days of operation)
-```
+### 5. Natural Language Interface
+Owners set strategy in plain English: *"I'm moving to Barcelona, 40% spending in EUR"* → agent updates on-chain parameters.
 
 ---
 
-## Natural Language Treasury Interface
+## Security
 
-Vault owners interact via MuleRun conversational AI:
-
-```
-Owner: "I'm moving to Barcelona next month, 40% spending in EUR"
-Agent: Current EURC: 22%. Suggesting EURC target 25-55%.
-       Confirm? [Yes / No / Adjust]
-Owner: Yes
-Agent: ✅ Updated on-chain. TX: 0x7f3a...
-```
-
----
-
-## Dashboard
-
-| Page | Description |
-|------|-------------|
-| `/` | Vault overview + network activity ticker + dUSDC NAV chart |
-| `/network` | Signal Bus monitoring — live signals, consensus history, signal distribution |
-| `/score` | DrachmaScore leaderboard + radar chart breakdown |
-| `/calculate` | Stablecoin loss calculator (traction tool) |
-| `/app` | Owner control panel — deposit, withdraw, bands, profile |
-
----
-
-## Setup
-
-### Prerequisites
-- Node.js 18+
-- Python 3.11+
-- Hardhat
-
-### Contracts
-```bash
-cd contracts
-npm install
-cp ../.env.example ../.env  # fill in values
-npx hardhat compile
-npx hardhat run scripts/deploy.js --network arc_testnet
-```
-
-### Agent
-```bash
-cd agent
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env  # fill in deployed addresses + keys
-python drachma_agent_v2.py
-```
-
-### Dashboard
-```bash
-cd dashboard
-npm install
-cp ../.env.example .env.local  # fill in NEXT_PUBLIC vars
-npm run dev
-```
-
-### Docker (Full Stack)
-```bash
-cp .env.example .env  # fill in all values
-docker-compose up -d
-# Agent runs on background, Dashboard on http://localhost:3000
-```
-
-### Run Tests
-```bash
-cd contracts
-npx hardhat test  # 86 tests, all passing
-```
+- **ReentrancyGuard** on all fund-transfer functions
+- **Slippage protection** on all swaps (90% floor in emergency)
+- **O(1) agent lookup** via reverse mapping (agentToVault)
+- **Band validation** with sum constraints
+- **Agent rotation** — owner can replace agent key without touching funds
+- No `delegatecall`, no `selfdestruct`, no `tx.origin`
 
 ---
 
@@ -304,74 +177,47 @@ npx hardhat test  # 86 tests, all passing
 
 ```
 drachma-arc/
-├── contracts/
-│   ├── DrachmaVault.sol          # Reserve vault + dUSDC ERC20
-│   ├── DrachmaSignalBus.sol      # Collective intelligence
-│   ├── DrachmaScoreOracle.sol    # On-chain credit scoring
-│   ├── DrachmaFactory.sol        # One-click deployment
-│   ├── mocks/                    # Test mocks
-│   ├── scripts/deploy.js         # Full deployment script
-│   └── test/                     # Hardhat tests
-├── agent/
-│   ├── drachma_agent_v2.py       # Event-driven main loop
-│   └── skills/
-│       ├── market_fetch/         # Market data + anomaly fields
-│       ├── llm_reason/           # Standard + urgent LLM modes
-│       ├── signal_push/          # Anomaly detection + Signal Bus
-│       ├── consensus_listener/   # ConsensusReached WebSocket
-│       ├── score_calc/           # Weekly DrachmaScore computation
-│       ├── conversation/         # Natural language interface
-│       ├── arc_submit/           # v2 transaction submission
-│       └── ipfs_pin/             # IPFS pinning (decisions + scores)
-├── dashboard/
-│   └── src/
-│       ├── app/                  # Pages: /, /network, /score, /calculate, /app
-│       ├── components/           # UI components
-│       └── lib/                  # Types, constants, utilities
-├── .env.example
-├── Dockerfile.agent
-├── Dockerfile.dashboard
-└── README.md
+├── agent/                    # Python AI agent
+│   ├── drachma_agent_v2.py   # Main event-driven agent
+│   ├── requirements.txt
+│   └── skills/               # Modular skill system
+│       ├── market_fetch/     # Circle MCP data
+│       ├── llm_reason/       # 4-dim LLM reasoning
+│       ├── signal_push/      # SignalBus interaction
+│       ├── consensus_listener/
+│       ├── score_calc/       # DrachmaScore computation
+│       ├── ipfs_pin/         # IPFS reasoning traces
+│       └── conversation/     # NL interface
+├── contracts/                # Solidity (Hardhat)
+│   ├── DrachmaVault.sol      # Core vault + dUSDC
+│   ├── DrachmaSignalBus.sol  # Collective intelligence
+│   ├── DrachmaScoreOracle.sol# On-chain credit score
+│   ├── DrachmaFactory.sol    # Vault creation
+│   └── scripts/              # Deploy & demo scripts
+├── dashboard/                # Next.js frontend
+├── docs/                     # Documentation
+│   ├── CIRCLE_TOOLS.md       # Circle stack deep dive
+│   └── DEPLOYMENT.md         # 5-min deploy guide
+├── scripts/                  # Utility scripts
+└── .env.example              # Complete config template
 ```
 
 ---
 
-## On-Chain Evidence
+## A Note on the Name
 
-All activity is verifiable on Arc Explorer:
+The Agora was the heart of ancient Athens — where citizens traded grain and oil,
+philosophers argued about justice, and the original price discovery happened.
 
-- `Rebalanced` events → vault allocation changes
-- `SignalSubmitted` events → market anomaly detections
-- `ConsensusReached` events → multi-agent consensus
-- `ScoreUpdated` events → weekly credit score updates
-- `Transfer(dUSDC)` events → receipt token minting
-- IPFS CIDs → full reasoning traces + score evidence
+The *drachma* was the currency that made the agora function.
+Without it, the agora was just a crowd.
 
----
+We named our protocol after that currency — because stablecoins are the
+drachma of the internet-native agora. And like the original drachma,
+Drachma doesn't speculate. It enables.
 
-## Innovation
-
-> Drachma v2 is the first on-chain reserve credit network on Arc.
->
-> Three primitives appear on Arc for the first time:
-> - **DrachmaSignalBus**: multi-agent collective intelligence protocol
-> - **DrachmaScore**: on-chain reserve credit scoring
-> - **dUSDC**: composable AI-managed yield receipt token
->
-> These primitives are not viable on Ethereum, Solana, or Base:
-> SignalBus consensus-response requires < 1s block time;
-> dUSDC micro-rebalances require $0.01 gas;
-> USYC is natively deployed only on Arc.
->
-> Arc is not Drachma's runtime — Arc is why Drachma exists.
+*"The agora is only as good as the money that flows through it."*
 
 ---
 
-## License
-
-MIT
-
----
-
-*Drachma Network — Collective Intelligence for Stablecoin Reserves*
-*Built on Arc | Powered by MuleRun + Claude | Agora Hackathon 2026*
+*Drachma Protocol | Agora Hackathon — Canteen × Circle | May 2026*

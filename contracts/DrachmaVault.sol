@@ -39,11 +39,11 @@ contract DrachmaVault {
 
     uint256 public navPerShare = 1_000_000;  // 1.000000 USDC per dUSDC
 
-    // --- Token addresses (Arc Testnet) ---
-    address public constant USDC      = 0x3600000000000000000000000000000000000000;
-    address public constant EURC      = 0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a;
-    address public constant USYC      = 0xe9185F0c5F296Ed1797AaE4238D26CCaBEadb86C;
-    address public constant STABLE_FX = 0x867650F5eAe8df91445971f14d89fd84F0C9a9f8;
+    // --- Token addresses (set in constructor) ---
+    address public immutable USDC;
+    address public immutable EURC;
+    address public immutable USYC;
+    address public immutable STABLE_FX;
 
     address public owner;
     address public agent;
@@ -86,11 +86,31 @@ contract DrachmaVault {
     modifier onlyOwner() { require(msg.sender == owner, "not owner"); _; }
     modifier onlyAgent() { require(msg.sender == agent, "not agent"); _; }
 
-    constructor(address _agent, address _signalBus, address _scoreOracle) {
+    bool private _locked;
+    modifier nonReentrant() {
+        require(!_locked, "ReentrancyGuard: reentrant call");
+        _locked = true;
+        _;
+        _locked = false;
+    }
+
+    constructor(
+        address _agent,
+        address _signalBus,
+        address _scoreOracle,
+        address _usdc,
+        address _eurc,
+        address _usyc,
+        address _stableFx
+    ) {
         owner       = msg.sender;
         agent       = _agent;
         signalBus   = _signalBus;
         scoreOracle = _scoreOracle;
+        USDC        = _usdc;
+        EURC        = _eurc;
+        USYC        = _usyc;
+        STABLE_FX   = _stableFx;
         bands       = AllocationBands(2000, 6000, 1000, 4000, 2000, 6000);
     }
 
@@ -120,7 +140,7 @@ contract DrachmaVault {
     }
 
     // --- Deposit: USDC -> dUSDC ---
-    function depositForShares(uint256 usdcAmount) external returns (uint256 dShares) {
+    function depositForShares(uint256 usdcAmount) external nonReentrant returns (uint256 dShares) {
         require(usdcAmount > 0, "zero deposit");
         IERC20(USDC).transferFrom(msg.sender, address(this), usdcAmount);
         dShares = usdcAmount * 1_000_000 / navPerShare;
@@ -131,7 +151,7 @@ contract DrachmaVault {
     }
 
     // --- Redeem: dUSDC -> USDC ---
-    function redeemShares(uint256 dShares) external returns (uint256 usdcOut) {
+    function redeemShares(uint256 dShares) external nonReentrant returns (uint256 usdcOut) {
         require(balanceOf[msg.sender] >= dShares, "insufficient shares");
         usdcOut = dShares * navPerShare / 1_000_000;
         uint256 liquidUsdc = IERC20(USDC).balanceOf(address(this));
@@ -169,7 +189,7 @@ contract DrachmaVault {
         uint256 minUsdcOut,
         uint8   triggerType,
         int32   networkSignalValue
-    ) external onlyAgent {
+    ) external onlyAgent nonReentrant {
         require(uint256(targetUsdcBps) + targetEurcBps + targetUsycBps == 10000, "!= 100%");
         _checkBands(targetUsdcBps, targetEurcBps, targetUsycBps);
 
@@ -222,13 +242,14 @@ contract DrachmaVault {
         emit Rebalanced(log.length - 1, reasoningCID, _totalAumUsdc(), triggerType);
     }
 
-    function emergencyExit(bytes32 reasoningCID) external onlyAgent {
+    function emergencyExit(bytes32 reasoningCID, uint256 minUsdcFromEurc) external onlyAgent nonReentrant {
         uint256 usycBal = IERC20(USYC).balanceOf(address(this));
         if (usycBal > 0) IUSYC(USYC).redeem(usycBal);
         uint256 eurcBal = IERC20(EURC).balanceOf(address(this));
         if (eurcBal > 0) {
             IERC20(EURC).approve(STABLE_FX, eurcBal);
-            IStableFX(STABLE_FX).swap(EURC, USDC, eurcBal, 0);
+            uint256 minOut = minUsdcFromEurc > 0 ? minUsdcFromEurc : eurcBal * 90 / 100;
+            IStableFX(STABLE_FX).swap(EURC, USDC, eurcBal, minOut);
         }
         if (totalSupply > 0) {
             navPerShare = _totalAumUsdc() * 1_000_000 / totalSupply;
@@ -249,11 +270,16 @@ contract DrachmaVault {
         emit Deposited(msg.sender, token, amount, 0);
     }
 
-    function withdraw(address token, uint256 amount) external onlyOwner {
+    function withdraw(address token, uint256 amount) external onlyOwner nonReentrant {
         IERC20(token).transfer(msg.sender, amount);
     }
 
     function updateBands(AllocationBands calldata nb) external onlyOwner {
+        require(nb.usdcMin <= nb.usdcMax, "USDC: min > max");
+        require(nb.eurcMin <= nb.eurcMax, "EURC: min > max");
+        require(nb.usycMin <= nb.usycMax, "USYC: min > max");
+        require(uint256(nb.usdcMin) + nb.eurcMin + nb.usycMin <= 10000, "min bands sum > 100%");
+        require(uint256(nb.usdcMax) + nb.eurcMax + nb.usycMax >= 10000, "max bands sum < 100%");
         bands = nb;
     }
 
