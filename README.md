@@ -103,6 +103,17 @@ DATA LAYER
 - **DrachmaSignalBus**: O(1) agent lookup via `agentToRegistered` mapping, score-weighted consensus detection
 - **DrachmaScoreOracle**: Credit Lane eligibility (score > 750), full score history with IPFS evidence
 
+### Deployed Contracts (Arc Testnet)
+
+| Contract | Address |
+|----------|---------|
+| DrachmaSignalBus | `0x469ad59A4dcdFe4393d732dfE2f318bA2442ee12` |
+| DrachmaScoreOracle | `0x0b489F9988C52F72BdEC5F8d55b1fD390B8Cd41D` |
+| DrachmaFactory | `0x6F4DF8979a8f18Ce3fD2ff941e5a3610E5cAfCa5` |
+| DrachmaVault | `0xabDd1dB9293234FCa684FA90C7e0b047427cC7fc` |
+
+Explorer: https://testnet.arcscan.app
+
 ### Deployment Order
 
 ```bash
