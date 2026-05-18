@@ -114,6 +114,40 @@ DATA LAYER
 
 Explorer: https://testnet.arcscan.app
 
+### On-Chain Activity (Arc Testnet — Live Data)
+
+| Operation | Count | Status |
+|-----------|-------|--------|
+| Vaults deployed (via Factory) | 13 | ✅ |
+| Vaults subscribed (SignalBus) | 9 | ✅ |
+| Signals submitted | 127 | ✅ |
+| **ConsensusReached events** | **6** | ✅ |
+| Reserve score updates | 20 | ✅ |
+| ScoreOracle structured update | 1 | ✅ |
+| NAV updates | 5 | ✅ |
+| USDC deposits | 1 (17.84 USDC) | ✅ |
+| dUSDC minted (depositForShares) | 0.997926 dUSDC | ✅ |
+| dUSDC transfers | 1 | ✅ |
+| Emergency exit | 1 | ✅ |
+| Band updates | 1 | ✅ |
+
+**Consensus Events Triggered:**
+
+| Signal Type | Weighted Avg Value | Contributing Vaults |
+|-------------|-------------------|---------------------|
+| EURC_SPREAD | 54 | 3 |
+| DEPEG_CRITICAL | -200 | 3 |
+| YIELD_SPIKE | 180 | 3 |
+| MACRO_ALERT | 85 | 3 |
+| STABLFX_THIN | 95 | 3 |
+| USYC_NAV | -18 | 3 |
+
+**Primary Vault State:**
+- Reserve Score: 810/1000
+- NAV per Share: 18.874281 (reflects AUM appreciation)
+- dUSDC Supply: 0.997926
+- Decision Log: 1 entry (emergency exit)
+
 ### Deployment Order
 
 ```bash
