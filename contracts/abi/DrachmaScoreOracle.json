@@ -1,0 +1,566 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "score",
+        "type": "uint16"
+      }
+    ],
+    "name": "CreditLaneGranted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "score",
+        "type": "uint16"
+      }
+    ],
+    "name": "CreditLaneRevoked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "newScore",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "oldScore",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "evidenceCID",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ScoreUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "initialScore",
+        "type": "uint16"
+      }
+    ],
+    "name": "VaultInitialized",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "CREDIT_THRESHOLD",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "UPDATE_INTERVAL",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "creditLaneEligible",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "currentScore",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "factory",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "getScore",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "getScoreBreakdown",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "total",
+        "type": "uint16"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "yieldPerformance",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "bandDiscipline",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "riskResponse",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "consistency",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct DrachmaScoreOracle.ScoreComponents",
+        "name": "latest",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "getScoreForDisplay",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "score",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bool",
+        "name": "creditLane",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint48",
+        "name": "lastUpdate",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint256",
+        "name": "historyLength",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "getScoreHistory",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "totalScore",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "yieldPerformance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "bandDiscipline",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "riskResponse",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "consistency",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct DrachmaScoreOracle.ScoreComponents",
+            "name": "components",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint48",
+            "name": "timestamp",
+            "type": "uint48"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "evidenceCID",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "periodStart",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "periodEnd",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct DrachmaScoreOracle.ScoreRecord[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "initializeVault",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "initializedVaults",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "isCreditLaneEligible",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "lastUpdatedAt",
+    "outputs": [
+      {
+        "internalType": "uint48",
+        "name": "",
+        "type": "uint48"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "scoreHistory",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "totalScore",
+        "type": "uint16"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "yieldPerformance",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "bandDiscipline",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "riskResponse",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "consistency",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct DrachmaScoreOracle.ScoreComponents",
+        "name": "components",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint48",
+        "name": "timestamp",
+        "type": "uint48"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "evidenceCID",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "periodStart",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "periodEnd",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_factory",
+        "type": "address"
+      }
+    ],
+    "name": "setFactory",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "yieldPerformance",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "bandDiscipline",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "riskResponse",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "consistency",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct DrachmaScoreOracle.ScoreComponents",
+        "name": "components",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "evidenceCID",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "periodStart",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "periodEnd",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateScore",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

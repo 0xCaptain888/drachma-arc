@@ -1,365 +1,974 @@
 [
   {
-    "type": "constructor",
-    "stateMutability": "nonpayable",
-    "inputs": [
-      { "name": "_agent", "type": "address" },
-      { "name": "_signalBus", "type": "address" },
-      { "name": "_scoreOracle", "type": "address" }
-    ]
-  },
-  {
-    "name": "name",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "string" }]
-  },
-  {
-    "name": "symbol",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "string" }]
-  },
-  {
-    "name": "decimals",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint8" }]
-  },
-  {
-    "name": "totalSupply",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256" }]
-  },
-  {
-    "name": "balanceOf",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [{ "name": "account", "type": "address" }],
-    "outputs": [{ "name": "", "type": "uint256" }]
-  },
-  {
-    "name": "allowance",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [
-      { "name": "owner", "type": "address" },
-      { "name": "spender", "type": "address" }
-    ],
-    "outputs": [{ "name": "", "type": "uint256" }]
-  },
-  {
-    "name": "navPerShare",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256" }]
-  },
-  {
-    "name": "owner",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address" }]
-  },
-  {
-    "name": "agent",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address" }]
-  },
-  {
-    "name": "agentVersion",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint8" }]
-  },
-  {
-    "name": "reserveScore",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint16" }]
-  },
-  {
-    "name": "signalBus",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address" }]
-  },
-  {
-    "name": "scoreOracle",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address" }]
-  },
-  {
-    "name": "bands",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [
-      { "name": "usdcMin", "type": "uint16" },
-      { "name": "usdcMax", "type": "uint16" },
-      { "name": "eurcMin", "type": "uint16" },
-      { "name": "eurcMax", "type": "uint16" },
-      { "name": "usycMin", "type": "uint16" },
-      { "name": "usycMax", "type": "uint16" }
-    ]
-  },
-  {
-    "name": "transfer",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [
-      { "name": "to", "type": "address" },
-      { "name": "amount", "type": "uint256" }
-    ],
-    "outputs": [{ "name": "", "type": "bool" }]
-  },
-  {
-    "name": "approve",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [
-      { "name": "spender", "type": "address" },
-      { "name": "amount", "type": "uint256" }
-    ],
-    "outputs": [{ "name": "", "type": "bool" }]
-  },
-  {
-    "name": "transferFrom",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [
-      { "name": "from", "type": "address" },
-      { "name": "to", "type": "address" },
-      { "name": "amount", "type": "uint256" }
-    ],
-    "outputs": [{ "name": "", "type": "bool" }]
-  },
-  {
-    "name": "depositForShares",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [{ "name": "usdcAmount", "type": "uint256" }],
-    "outputs": [{ "name": "dShares", "type": "uint256" }]
-  },
-  {
-    "name": "redeemShares",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [{ "name": "dShares", "type": "uint256" }],
-    "outputs": [{ "name": "usdcOut", "type": "uint256" }]
-  },
-  {
-    "name": "updateNav",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [],
-    "outputs": []
-  },
-  {
-    "name": "updateReserveScore",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [
-      { "name": "newScore", "type": "uint16" },
-      { "name": "evidenceCID", "type": "bytes32" }
-    ],
-    "outputs": []
-  },
-  {
-    "name": "rebalance",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [
-      { "name": "targetUsdcBps", "type": "uint16" },
-      { "name": "targetEurcBps", "type": "uint16" },
-      { "name": "targetUsycBps", "type": "uint16" },
-      { "name": "reasoningCID", "type": "bytes32" },
-      { "name": "minUsdcOut", "type": "uint256" },
-      { "name": "triggerType", "type": "uint8" },
-      { "name": "networkSignalValue", "type": "int32" }
-    ],
-    "outputs": []
-  },
-  {
-    "name": "emergencyExit",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [{ "name": "reasoningCID", "type": "bytes32" }],
-    "outputs": []
-  },
-  {
-    "name": "deposit",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [
-      { "name": "token", "type": "address" },
-      { "name": "amount", "type": "uint256" }
-    ],
-    "outputs": []
-  },
-  {
-    "name": "withdraw",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [
-      { "name": "token", "type": "address" },
-      { "name": "amount", "type": "uint256" }
-    ],
-    "outputs": []
-  },
-  {
-    "name": "updateBands",
-    "type": "function",
-    "stateMutability": "nonpayable",
     "inputs": [
       {
-        "name": "nb",
-        "type": "tuple",
-        "components": [
-          { "name": "usdcMin", "type": "uint16" },
-          { "name": "usdcMax", "type": "uint16" },
-          { "name": "eurcMin", "type": "uint16" },
-          { "name": "eurcMax", "type": "uint16" },
-          { "name": "usycMin", "type": "uint16" },
-          { "name": "usycMax", "type": "uint16" }
-        ]
+        "internalType": "address",
+        "name": "_agent",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_signalBus",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_scoreOracle",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_usdc",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_eurc",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_usyc",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_stableFx",
+        "type": "address"
       }
     ],
-    "outputs": []
-  },
-  {
-    "name": "rotateAgent",
-    "type": "function",
     "stateMutability": "nonpayable",
-    "inputs": [{ "name": "newAgent", "type": "address" }],
-    "outputs": []
+    "type": "constructor"
   },
   {
-    "name": "transferOwnership",
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "inputs": [{ "name": "newOwner", "type": "address" }],
-    "outputs": []
-  },
-  {
-    "name": "totalAum",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [
-      { "name": "usdc", "type": "uint256" },
-      { "name": "eurc", "type": "uint256" },
-      { "name": "usyc", "type": "uint256" },
-      { "name": "totalInUsdc", "type": "uint256" }
-    ]
-  },
-  {
-    "name": "decisionLogLength",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256" }]
-  },
-  {
-    "name": "getShareValue",
-    "type": "function",
-    "stateMutability": "view",
-    "inputs": [{ "name": "holder", "type": "address" }],
-    "outputs": [
-      { "name": "dUsdcBalance", "type": "uint256" },
-      { "name": "usdcValue", "type": "uint256" }
-    ]
-  },
-  {
-    "name": "Transfer",
-    "type": "event",
+    "anonymous": false,
     "inputs": [
-      { "name": "from", "type": "address", "indexed": true },
-      { "name": "to", "type": "address", "indexed": true },
-      { "name": "value", "type": "uint256", "indexed": false }
-    ]
-  },
-  {
-    "name": "Approval",
-    "type": "event",
-    "inputs": [
-      { "name": "_owner", "type": "address", "indexed": true },
-      { "name": "spender", "type": "address", "indexed": true },
-      { "name": "value", "type": "uint256", "indexed": false }
-    ]
-  },
-  {
-    "name": "Rebalanced",
-    "type": "event",
-    "inputs": [
-      { "name": "logIndex", "type": "uint256", "indexed": true },
-      { "name": "reasoningCID", "type": "bytes32", "indexed": false },
-      { "name": "totalAumUsdc", "type": "uint256", "indexed": false },
-      { "name": "triggerType", "type": "uint8", "indexed": false }
-    ]
-  },
-  {
-    "name": "Deposited",
-    "type": "event",
-    "inputs": [
-      { "name": "depositor", "type": "address", "indexed": true },
-      { "name": "token", "type": "address", "indexed": false },
-      { "name": "amount", "type": "uint256", "indexed": false },
-      { "name": "dUsdcMinted", "type": "uint256", "indexed": false }
-    ]
-  },
-  {
-    "name": "Withdrawn",
-    "type": "event",
-    "inputs": [
-      { "name": "redeemer", "type": "address", "indexed": true },
-      { "name": "dUsdcBurned", "type": "uint256", "indexed": false },
-      { "name": "usdcOut", "type": "uint256", "indexed": false }
-    ]
-  },
-  {
-    "name": "NavUpdated",
-    "type": "event",
-    "inputs": [
-      { "name": "newNavPerShare", "type": "uint256", "indexed": false },
-      { "name": "totalAumUsdc", "type": "uint256", "indexed": false }
-    ]
-  },
-  {
-    "name": "ScoreUpdated",
-    "type": "event",
-    "inputs": [
-      { "name": "oldScore", "type": "uint16", "indexed": false },
-      { "name": "newScore", "type": "uint16", "indexed": false },
-      { "name": "evidenceCID", "type": "bytes32", "indexed": false }
-    ]
-  },
-  {
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "oldAgent",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newAgent",
+        "type": "address"
+      }
+    ],
     "name": "AgentRotated",
-    "type": "event",
-    "inputs": [
-      { "name": "oldAgent", "type": "address", "indexed": true },
-      { "name": "newAgent", "type": "address", "indexed": true }
-    ]
+    "type": "event"
   },
   {
-    "name": "EmergencyExit",
-    "type": "event",
+    "anonymous": false,
     "inputs": [
-      { "name": "usdcRecovered", "type": "uint256", "indexed": false }
-    ]
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "Approval",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "depositor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "dUsdcMinted",
+        "type": "uint256"
+      }
+    ],
+    "name": "Deposited",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "usdcRecovered",
+        "type": "uint256"
+      }
+    ],
+    "name": "EmergencyExit",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newNavPerShare",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalAumUsdc",
+        "type": "uint256"
+      }
+    ],
+    "name": "NavUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "logIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "reasoningCID",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalAumUsdc",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "triggerType",
+        "type": "uint8"
+      }
+    ],
+    "name": "Rebalanced",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "oldScore",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "newScore",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "evidenceCID",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ScoreUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "Transfer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "redeemer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "dUsdcBurned",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "usdcOut",
+        "type": "uint256"
+      }
+    ],
+    "name": "Withdrawn",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "EURC",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "STABLE_FX",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "USDC",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "USYC",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "agent",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "agentVersion",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "allowance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "approve",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "bands",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "usdcMin",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "usdcMax",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "eurcMin",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "eurcMax",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "usycMin",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "usycMax",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "decisionLogLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "deposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "usdcAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositForShares",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "dShares",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "reasoningCID",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minUsdcFromEurc",
+        "type": "uint256"
+      }
+    ],
+    "name": "emergencyExit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "holder",
+        "type": "address"
+      }
+    ],
+    "name": "getShareValue",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "dUsdcBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "usdcValue",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "log",
+    "outputs": [
+      {
+        "internalType": "uint48",
+        "name": "timestamp",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint8",
+        "name": "action",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "usdcBpsBefore",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "eurcBpsBefore",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "usycBpsBefore",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "usdcBpsAfter",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "eurcBpsAfter",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "usycBpsAfter",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "reasoningCID",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint8",
+        "name": "triggerType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "int32",
+        "name": "networkSignalValue",
+        "type": "int32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "name",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "navPerShare",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "targetUsdcBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "targetEurcBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "targetUsycBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "reasoningCID",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minUsdcOut",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "triggerType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "int32",
+        "name": "networkSignalValue",
+        "type": "int32"
+      }
+    ],
+    "name": "rebalance",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "dShares",
+        "type": "uint256"
+      }
+    ],
+    "name": "redeemShares",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "usdcOut",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "reserveScore",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newAgent",
+        "type": "address"
+      }
+    ],
+    "name": "rotateAgent",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "scoreOracle",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "signalBus",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalAum",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "usdc",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "eurc",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "usyc",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalInUsdc",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "transfer",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferFrom",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "usdcMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "usdcMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "eurcMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "eurcMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "usycMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "usycMax",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct DrachmaVault.AllocationBands",
+        "name": "nb",
+        "type": "tuple"
+      }
+    ],
+    "name": "updateBands",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "updateNav",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "newScore",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "evidenceCID",
+        "type": "bytes32"
+      }
+    ],
+    "name": "updateReserveScore",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
 ]
