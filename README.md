@@ -4,6 +4,8 @@
 > Drachma is the treasury department of the AI agent economy —
 > autonomous, collective, and composable.
 
+[![Dashboard](https://img.shields.io/badge/Dashboard-Live-brightgreen?style=for-the-badge)](https://drachma.xyz)
+[![Demo Video](https://img.shields.io/badge/Demo_Video-3min-blue?style=for-the-badge)](https://loom.com/share/drachma-demo)
 [![Arc Explorer](https://img.shields.io/badge/Arc_Explorer-28_decisions-orange?style=for-the-badge)](https://testnet.arcscan.app/address/0xD3D5b81b28b51aDdc5A3a06231C5d0ED782E1995)
 
 Built for the **Agora Hackathon** — Canteen × Circle | Arc L1 | May 2026
@@ -201,6 +203,38 @@ drachma-arc/
 ├── scripts/                  # Utility scripts
 └── .env.example              # Complete config template
 ```
+
+---
+
+## Sample IPFS Reasoning Trace
+
+Every autonomous decision is pinned to IPFS with full market context, reasoning, and data source provenance.
+
+[`QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG`](https://gateway.pinata.cloud/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG)
+
+```json
+{
+  "decision": {
+    "action": "rebalance",
+    "usdc_bps": 3500,
+    "eurc_bps": 2500,
+    "usyc_bps": 4000,
+    "confidence": 0.82
+  },
+  "market_data_source": "circle_mcp",
+  "data_quality": "real",
+  "market_snapshot": {
+    "usdc_eurc_rate": 1.082,
+    "usyc_apy_30d": 4.48,
+    "ecb_rate": 2.75,
+    "fed_rate": 4.5,
+    "stablfx_spread_bps": 18
+  },
+  "agent_version": "drachma-v2.0.0"
+}
+```
+
+Every claim is verifiable. Every decision is auditable.
 
 ---
 
