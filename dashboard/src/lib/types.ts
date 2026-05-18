@@ -63,6 +63,8 @@ export interface ContractDecisionLog {
   eurcBpsAfter: number;     // uint16 — EURC allocation after rebalance (bps)
   usycBpsAfter: number;     // uint16 — USYC allocation after rebalance (bps)
   reasoningCID: string;     // bytes32 — sha256(IPFS CID) of full LLM reasoning trace
+  triggerType: number;      // uint8  — 0=scheduled, 1=consensus, 2=urgent, 3=conversation
+  networkSignalValue: number; // int32 — consensus signal value in bps
 }
 
 /** Action types as defined in the DrachmaVault.sol contract */

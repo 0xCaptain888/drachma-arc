@@ -4,12 +4,13 @@ Signal Push Skill
 Market anomaly detection and DrachmaSignalBus signal submission.
 
 Detects anomalies in market snapshots by comparing current vs previous
-state across five signal types:
-  1 — EURC secondary market spread
-  2 — StableFX liquidity spread
-  3 — EURC depeg alert
-  4 — USYC NAV deviation
-  5 — Yield / rate anomaly
+state across six signal types (matching DrachmaSignalBus.sol):
+  0 — EURC secondary market spread
+  1 — USYC NAV deviation
+  2 — StableFX thin liquidity
+  3 — Depeg critical
+  4 — Macro alert
+  5 — Yield spike
 
 Submits medium+ severity signals to the on-chain DrachmaSignalBus and
 reads back recent network-wide signals for consensus context.
@@ -41,11 +42,11 @@ TX_RECEIPT_TIMEOUT    = int(os.getenv("TX_RECEIPT_TIMEOUT", 30))
 
 # Signal severity thresholds (basis points unless noted)
 EURC_SPREAD_WARN_BPS    = int(os.getenv("EURC_SPREAD_WARN_BPS",    30))
-EURC_SPREAD_CRIT_BPS    = int(os.getenv("EURC_SPREAD_CRIT_BPS",    80))
+EURC_SPREAD_CRIT_BPS    = int(os.getenv("EURC_SPREAD_CRIT_BPS",    50))
 STABLFX_SPREAD_WARN_BPS = int(os.getenv("STABLFX_SPREAD_WARN_BPS", 50))
-STABLFX_SPREAD_CRIT_BPS = int(os.getenv("STABLFX_SPREAD_CRIT_BPS", 120))
-USYC_NAV_DEVIATION_BPS  = int(os.getenv("USYC_NAV_DEVIATION_BPS",  20))
-YIELD_JUMP_BPS          = int(os.getenv("YIELD_JUMP_BPS",          50))
+STABLFX_SPREAD_CRIT_BPS = int(os.getenv("STABLFX_SPREAD_CRIT_BPS", 80))
+USYC_NAV_DEVIATION_BPS  = int(os.getenv("USYC_NAV_DEVIATION_BPS",  10))
+YIELD_JUMP_BPS          = int(os.getenv("YIELD_JUMP_BPS",          30))
 
 # DrachmaSignalBus ABI
 SIGNAL_BUS_ABI = json.loads(
@@ -69,12 +70,13 @@ SIGNAL_BUS_ABI = json.loads(
     ']'
 )
 
-# Signal type constants
-SIG_EURC_SPREAD    = 1
-SIG_STABLFX_SPREAD = 2
-SIG_EURC_DEPEG     = 3
-SIG_USYC_NAV       = 4
-SIG_YIELD_ANOMALY  = 5
+# Signal type constants (must match DrachmaSignalBus.sol)
+SIG_EURC_SPREAD    = 0
+SIG_USYC_NAV       = 1
+SIG_STABLFX_THIN   = 2
+SIG_DEPEG_CRITICAL = 3
+SIG_MACRO_ALERT    = 4
+SIG_YIELD_SPIKE    = 5
 
 # Severity levels
 SEV_LOW    = 1
@@ -157,7 +159,7 @@ def detect_anomalies(current: dict, previous: dict) -> list[dict]:
 
     if severity:
         anomalies.append({
-            "signal_type": SIG_STABLFX_SPREAD,
+            "signal_type": SIG_STABLFX_THIN,
             "value_bps":   stablfx_spread,
             "severity":    severity,
             "description": f"StableFX spread {stablfx_spread}bps",
@@ -168,7 +170,7 @@ def detect_anomalies(current: dict, previous: dict) -> list[dict]:
     if depeg_alerts:
         # Use the first alert; value_bps is a rough 50bps default signal
         anomalies.append({
-            "signal_type": SIG_EURC_DEPEG,
+            "signal_type": SIG_DEPEG_CRITICAL,
             "value_bps":   50,
             "severity":    SEV_CRIT,
             "description": f"Depeg alert: {depeg_alerts[0]}",
@@ -195,7 +197,7 @@ def detect_anomalies(current: dict, previous: dict) -> list[dict]:
         apy_delta_bps = int(abs(curr_apy - prev_apy) * 100)
         if apy_delta_bps >= YIELD_JUMP_BPS:
             anomalies.append({
-                "signal_type": SIG_YIELD_ANOMALY,
+                "signal_type": SIG_YIELD_SPIKE,
                 "value_bps":   apy_delta_bps,
                 "severity":    SEV_MEDIUM,
                 "description": f"USYC APY jump {apy_delta_bps}bps (prev={prev_apy:.2f}% curr={curr_apy:.2f}%)",
