@@ -49,6 +49,8 @@ def _build_pin_payload(decision: dict, snap: MarketSnapshot) -> dict:
     return {
         "pinataContent": {
             "decision": decision,
+            "market_data_source": getattr(snap, 'data_source', 'unknown'),
+            "data_quality": "real" if getattr(snap, 'data_source', '') == "circle_mcp" else "fallback",
             "market_snapshot": {
                 "usdc_eurc_rate":         snap.usdc_eurc_rate,
                 "usyc_apy_30d":           snap.usyc_apy_30d,
@@ -56,6 +58,8 @@ def _build_pin_payload(decision: dict, snap: MarketSnapshot) -> dict:
                 "fed_rate":               snap.fed_rate,
                 "eur_usd_1w_implied_vol": snap.eur_usd_1w_implied_vol,
                 "depeg_alerts":           snap.depeg_alerts,
+                "stablfx_spread_bps":     getattr(snap, 'stablfx_spread_bps', 0),
+                "eurc_secondary_spread_bps": getattr(snap, 'eurc_secondary_spread_bps', 0),
             },
             "vault_aum_usdc": snap.vault_total_aum_usdc,
             "timestamp":      datetime.now(timezone.utc).isoformat(),
