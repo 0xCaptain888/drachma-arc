@@ -40,10 +40,10 @@ contract DrachmaVault {
     uint256 public navPerShare = 1_000_000;  // 1.000000 USDC per dUSDC
 
     // --- Token addresses (Arc Testnet) ---
-    address public constant USDC      = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238;
-    address public constant EURC      = 0x08210F9170F89AB7658f0B5E3fF39B0e03C2E443;
-    address public constant USYC      = 0x0c3cDD5f3Df3Ebb6e3c2fB05e61EE2D3F0C0b54c;
-    address public constant STABLE_FX = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
+    address public constant USDC      = 0x3600000000000000000000000000000000000000;
+    address public constant EURC      = 0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a;
+    address public constant USYC      = 0xe9185F0c5F296Ed1797AaE4238D26CCaBEadb86C;
+    address public constant STABLE_FX = 0x867650F5eAe8df91445971f14d89fd84F0C9a9f8;
 
     address public owner;
     address public agent;

@@ -26,12 +26,12 @@ module.exports = {
   },
   networks: {
     arc_testnet: {
-      url: process.env.ARC_RPC_URL || "https://rpc-testnet.arcprotocol.xyz",
+      url: process.env.ARC_RPC_URL || "https://rpc.testnet.arc.network",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: 480808
+      chainId: 5042002
     },
     arc_mainnet: {
-      url: process.env.ARC_MAINNET_RPC || "https://rpc.arcprotocol.xyz",
+      url: process.env.ARC_MAINNET_RPC || "https://rpc.arc.network",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
     }
   }
