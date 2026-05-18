@@ -1,16 +1,25 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
+const { subtask } = require("hardhat/config");
+const { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } = require("hardhat/builtin-tasks/task-names");
+
+// Exclude node_modules/.sol files that eth-gas-reporter places under mock/contracts
+subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS, async (_, __, runSuper) => {
+  const paths = await runSuper();
+  return paths.filter(p => !p.includes("node_modules"));
+});
 
 module.exports = {
   solidity: {
     version: "0.8.24",
     settings: {
       optimizer: { enabled: true, runs: 200 },
-      evmVersion: "cancun"
+      evmVersion: "cancun",
+      viaIR: true
     }
   },
   paths: {
-    sources: ".",
+    sources: "./",
     tests: "./test",
     cache: "./cache",
     artifacts: "./artifacts"

@@ -36,7 +36,7 @@ IPFS_ENDPOINT = os.getenv(
 )
 IPFS_JWT = os.getenv("IPFS_JWT")
 
-AGENT_VERSION = "drachma-0.1.0"
+AGENT_VERSION = "drachma-v2.0.0"
 PIN_TIMEOUT   = int(os.getenv("IPFS_PIN_TIMEOUT", 30))
 
 
@@ -139,6 +139,142 @@ def pin_reasoning(
     bytes32 = cid_to_bytes32(cid)
 
     logger.info("Pinned successfully. CID: %s | bytes32: %s", cid, bytes32)
+    return bytes32
+
+
+# ─── Score Evidence Pinner ───────────────────────────────────────────────────
+def pin_score_evidence(
+    score_result: dict,
+    vault_address: str,
+    dry_run: bool = False,
+) -> str:
+    """
+    Pin the weekly DrachmaScore evidence bundle to IPFS.
+
+    Parameters
+    ----------
+    score_result : dict
+        Output of calculate_and_update_score() or compute_score_components().
+        Expected keys: score, components, weekly_stats (optional).
+    vault_address : str
+        Vault contract address for metadata.
+    dry_run : bool
+        If True, build and log the payload but skip the actual pin.
+
+    Returns
+    -------
+    str
+        0x-prefixed bytes32 hex string (SHA-256 of the IPFS CID).
+    """
+    payload = {
+        "pinataContent": {
+            "type":          "drachma_score_evidence",
+            "vault":         vault_address,
+            "score":         score_result.get("score"),
+            "components":    score_result.get("components", {}),
+            "weekly_stats":  score_result.get("weekly_stats", {}),
+            "timestamp":     datetime.now(timezone.utc).isoformat(),
+            "agent_version": AGENT_VERSION,
+        },
+        "pinataMetadata": {
+            "name": f"drachma-score-evidence-{int(time.time())}",
+        },
+    }
+
+    if dry_run:
+        payload_json = json.dumps(payload, sort_keys=True)
+        fake_cid = "Qm" + hashlib.sha256(payload_json.encode()).hexdigest()[:44]
+        logger.info("DRY RUN — score evidence fake CID: %s", fake_cid)
+        return cid_to_bytes32(fake_cid)
+
+    if not IPFS_JWT:
+        raise ValueError("IPFS_JWT environment variable is required for pinning.")
+
+    logger.info("Pinning score evidence to IPFS")
+
+    resp = httpx.post(
+        IPFS_ENDPOINT,
+        headers={
+            "Authorization": f"Bearer {IPFS_JWT}",
+            "Content-Type":  "application/json",
+        },
+        json=payload,
+        timeout=PIN_TIMEOUT,
+    )
+    resp.raise_for_status()
+
+    cid     = resp.json()["IpfsHash"]
+    bytes32 = cid_to_bytes32(cid)
+    logger.info("Score evidence pinned. CID: %s | bytes32: %s", cid, bytes32)
+    return bytes32
+
+
+# ─── Conversation Pinner ─────────────────────────────────────────────────────
+def pin_conversation(
+    conversation_history: list[dict],
+    action_taken: Optional[str] = None,
+    vault_address: Optional[str] = None,
+    dry_run: bool = False,
+) -> str:
+    """
+    Pin a conversation session transcript to IPFS for auditability.
+
+    Parameters
+    ----------
+    conversation_history : list[dict]
+        Anthropic-format message history [{"role": ..., "content": ...}].
+    action_taken : str, optional
+        Description of any on-chain action executed from the conversation.
+    vault_address : str, optional
+        Vault address for metadata.
+    dry_run : bool
+        If True, skip the actual pin and return a deterministic hash.
+
+    Returns
+    -------
+    str
+        0x-prefixed bytes32 hex string (SHA-256 of the IPFS CID).
+    """
+    payload = {
+        "pinataContent": {
+            "type":               "drachma_conversation",
+            "vault":              vault_address or "unknown",
+            "turn_count":         len(conversation_history),
+            "history":            conversation_history,
+            "action_taken":       action_taken,
+            "timestamp":          datetime.now(timezone.utc).isoformat(),
+            "agent_version":      AGENT_VERSION,
+        },
+        "pinataMetadata": {
+            "name": f"drachma-conversation-{int(time.time())}",
+        },
+    }
+
+    if dry_run:
+        payload_json = json.dumps(payload, sort_keys=True, default=str)
+        fake_cid = "Qm" + hashlib.sha256(payload_json.encode()).hexdigest()[:44]
+        logger.info("DRY RUN — conversation fake CID: %s", fake_cid)
+        return cid_to_bytes32(fake_cid)
+
+    if not IPFS_JWT:
+        raise ValueError("IPFS_JWT environment variable is required for pinning.")
+
+    logger.info("Pinning conversation transcript to IPFS (%d turns)", len(conversation_history))
+
+    resp = httpx.post(
+        IPFS_ENDPOINT,
+        headers={
+            "Authorization": f"Bearer {IPFS_JWT}",
+            "Content-Type":  "application/json",
+        },
+        json=payload,
+        timeout=PIN_TIMEOUT,
+    )
+    resp.raise_for_status()
+
+    cid     = resp.json()["IpfsHash"]
+    bytes32 = cid_to_bytes32(cid)
+    logger.info("Conversation pinned. CID: %s | bytes32: %s", cid, bytes32)
     return bytes32
 
 

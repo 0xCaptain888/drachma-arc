@@ -3,10 +3,10 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "Drachma — Autonomous Stablecoin Reserve Manager",
+  title: "Drachma Network — AI Agents Collectively Managing Stablecoin Reserves",
   description:
-    "AI-managed stablecoin reserve vault on Arc. Autonomous FX hedging, yield optimization, and portfolio rebalancing.",
-  keywords: ["stablecoin", "DeFi", "Arc", "USDC", "EURC", "USYC", "yield"],
+    "A network of AI agents collectively managing stablecoin reserves on Arc. Signal Bus consensus, DrachmaScore leaderboard, autonomous FX hedging, yield optimization, and portfolio rebalancing.",
+  keywords: ["stablecoin", "DeFi", "Arc", "USDC", "EURC", "USYC", "yield", "AI agents", "signal bus", "DrachmaScore"],
 };
 
 export default function RootLayout({

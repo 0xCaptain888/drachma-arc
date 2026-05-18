@@ -15,4 +15,4 @@ USER drachma
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "drachma_agent.py"]
+CMD ["python", "drachma_agent_v2.py"]

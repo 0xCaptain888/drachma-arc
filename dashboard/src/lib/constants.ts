@@ -192,3 +192,151 @@ export const VAULT_ABI = [
     ],
   },
 ] as const;
+
+// ─── Signal Bus ──────────────────────────────────────────────────────────────
+
+export const SIGNAL_BUS_ADDRESS =
+  process.env.NEXT_PUBLIC_SIGNAL_BUS_ADDRESS || "0x0000000000000000000000000000000000000000";
+
+export const SCORE_ORACLE_ADDRESS =
+  process.env.NEXT_PUBLIC_SCORE_ORACLE_ADDRESS || "0x0000000000000000000000000000000000000000";
+
+export const FACTORY_ADDRESS =
+  process.env.NEXT_PUBLIC_FACTORY_ADDRESS || "0x0000000000000000000000000000000000000000";
+
+export const SIGNAL_BUS_ABI = [
+  // read functions
+  {
+    name: "totalSignals",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    name: "totalConsensusEvents",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    name: "registeredVaultCount",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    name: "getConsensusHistory",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "tuple[]",
+        components: [
+          { name: "signalType", type: "uint8" },
+          { name: "weightedAvgValue", type: "int32" },
+          { name: "vaultCount", type: "uint256" },
+          { name: "contributingVaults", type: "address[]" },
+          { name: "timestamp", type: "uint48" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "getRecentSignals",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      { name: "signalType", type: "uint8" },
+      { name: "windowSecs", type: "uint256" },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "tuple[]",
+        components: [
+          { name: "vault", type: "address" },
+          { name: "agent", type: "address" },
+          { name: "signalType", type: "uint8" },
+          { name: "value", type: "int32" },
+          { name: "timestamp", type: "uint48" },
+          { name: "vaultScore", type: "uint16" },
+        ],
+      },
+    ],
+  },
+] as const;
+
+// ─── Score Oracle ─────────────────────────────────────────────────────────────
+
+export const SCORE_ORACLE_ABI = [
+  {
+    name: "getScore",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "vault", type: "address" }],
+    outputs: [{ name: "", type: "uint16" }],
+  },
+  {
+    name: "isCreditLaneEligible",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "vault", type: "address" }],
+    outputs: [{ name: "", type: "bool" }],
+  },
+  {
+    name: "getScoreBreakdown",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "vault", type: "address" }],
+    outputs: [
+      { name: "total", type: "uint16" },
+      {
+        name: "latest",
+        type: "tuple",
+        components: [
+          { name: "yieldPerformance", type: "uint16" },
+          { name: "bandDiscipline", type: "uint16" },
+          { name: "riskResponse", type: "uint16" },
+          { name: "consistency", type: "uint16" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "getScoreForDisplay",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "vault", type: "address" }],
+    outputs: [
+      { name: "score", type: "uint16" },
+      { name: "creditLane", type: "bool" },
+      { name: "lastUpdate", type: "uint48" },
+      { name: "historyLength", type: "uint256" },
+    ],
+  },
+] as const;
+
+// ─── Signal metadata ──────────────────────────────────────────────────────────
+
+export const SIGNAL_TYPE_LABELS: Record<number, string> = {
+  0: "EURC Spread",
+  1: "USYC NAV",
+  2: "StableFX Thin",
+  3: "Depeg Critical",
+  4: "Macro Alert",
+  5: "Yield Spike",
+};
+
+export const SIGNAL_TYPE_COLORS: Record<number, string> = {
+  0: "#F59E0B",
+  1: "#3B82F6",
+  2: "#8B5CF6",
+  3: "#EF4444",
+  4: "#10B981",
+  5: "#F97316",
+};

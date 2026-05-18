@@ -54,18 +54,21 @@ VAULT_ABI = json.loads(
 @dataclass
 class MarketSnapshot:
     """Complete market + vault state consumed by the LLM reasoning skill."""
-    usdc_eurc_rate:         float
-    usyc_nav_per_share:     float
-    usyc_apy_30d:           float
-    ecb_rate:               float
-    fed_rate:               float
-    eur_usd_1w_implied_vol: float
-    depeg_alerts:           list
-    vault_usdc:             float
-    vault_eurc:             float
-    vault_usyc_shares:      float
-    vault_total_aum_usdc:   float
-    owner_profile:          dict
+    usdc_eurc_rate:              float
+    usyc_nav_per_share:          float
+    usyc_apy_30d:                float
+    ecb_rate:                    float
+    fed_rate:                    float
+    eur_usd_1w_implied_vol:      float
+    depeg_alerts:                list
+    vault_usdc:                  float
+    vault_eurc:                  float
+    vault_usyc_shares:           float
+    vault_total_aum_usdc:        float
+    owner_profile:               dict
+    # v2 fields — optional with defaults for backward compatibility
+    eurc_secondary_spread_bps:   Optional[int] = None
+    stablfx_spread_bps:          Optional[int] = None
 
     def to_dict(self) -> dict:
         """Serialize for JSON transport."""
@@ -153,13 +156,15 @@ def _fetch_vault_state(vault_address: Optional[str] = None) -> dict:
 def _mock_market_data() -> dict:
     """Generate plausible mock data when live feeds are unavailable."""
     return {
-        "usdc_eurc_rate":         1.082 + random.uniform(-0.003, 0.003),
-        "usyc_nav_per_share":     1.00 + (0.045 / 365) * 30,
-        "usyc_apy_30d":           4.48 + random.uniform(-0.1, 0.1),
-        "ecb_rate":               3.5,
-        "fed_rate":               4.75,
-        "eur_usd_1w_implied_vol": 5.2 + random.uniform(-0.3, 0.3),
-        "depeg_alerts":           [],
+        "usdc_eurc_rate":              1.082 + random.uniform(-0.003, 0.003),
+        "usyc_nav_per_share":          1.00 + (0.045 / 365) * 30,
+        "usyc_apy_30d":                4.48 + random.uniform(-0.1, 0.1),
+        "ecb_rate":                    3.5,
+        "fed_rate":                    4.75,
+        "eur_usd_1w_implied_vol":      5.2 + random.uniform(-0.3, 0.3),
+        "depeg_alerts":                [],
+        "eurc_secondary_spread_bps":   int(abs(random.gauss(15, 6))),
+        "stablfx_spread_bps":          int(abs(random.gauss(20, 8))),
     }
 
 
@@ -197,28 +202,32 @@ def fetch_market_data(
         depeg = _check_depeg_alerts()
 
         market = {
-            "usdc_eurc_rate":         usdc_eurc if usdc_eurc else mock["usdc_eurc_rate"],
-            "usyc_nav_per_share":     nav if nav else mock["usyc_nav_per_share"],
-            "usyc_apy_30d":           apy if apy else mock["usyc_apy_30d"],
-            "ecb_rate":               ecb if ecb else mock["ecb_rate"],
-            "fed_rate":               fed if fed else mock["fed_rate"],
-            "eur_usd_1w_implied_vol": iv if iv else mock["eur_usd_1w_implied_vol"],
-            "depeg_alerts":           depeg,
+            "usdc_eurc_rate":            usdc_eurc if usdc_eurc else mock["usdc_eurc_rate"],
+            "usyc_nav_per_share":        nav if nav else mock["usyc_nav_per_share"],
+            "usyc_apy_30d":              apy if apy else mock["usyc_apy_30d"],
+            "ecb_rate":                  ecb if ecb else mock["ecb_rate"],
+            "fed_rate":                  fed if fed else mock["fed_rate"],
+            "eur_usd_1w_implied_vol":    iv if iv else mock["eur_usd_1w_implied_vol"],
+            "depeg_alerts":              depeg,
+            "eurc_secondary_spread_bps": mock["eurc_secondary_spread_bps"],
+            "stablfx_spread_bps":        mock["stablfx_spread_bps"],
         }
 
     return MarketSnapshot(
-        usdc_eurc_rate         = market["usdc_eurc_rate"],
-        usyc_nav_per_share     = market["usyc_nav_per_share"],
-        usyc_apy_30d           = market["usyc_apy_30d"],
-        ecb_rate               = market["ecb_rate"],
-        fed_rate               = market["fed_rate"],
-        eur_usd_1w_implied_vol = market["eur_usd_1w_implied_vol"],
-        depeg_alerts           = market["depeg_alerts"],
-        vault_usdc             = vault_state.get("usdc", 0),
-        vault_eurc             = vault_state.get("eurc", 0),
-        vault_usyc_shares      = vault_state.get("usyc_shares", 0),
-        vault_total_aum_usdc   = vault_state.get("total_aum", 0),
-        owner_profile          = owner_profile,
+        usdc_eurc_rate             = market["usdc_eurc_rate"],
+        usyc_nav_per_share         = market["usyc_nav_per_share"],
+        usyc_apy_30d               = market["usyc_apy_30d"],
+        ecb_rate                   = market["ecb_rate"],
+        fed_rate                   = market["fed_rate"],
+        eur_usd_1w_implied_vol     = market["eur_usd_1w_implied_vol"],
+        depeg_alerts               = market["depeg_alerts"],
+        vault_usdc                 = vault_state.get("usdc", 0),
+        vault_eurc                 = vault_state.get("eurc", 0),
+        vault_usyc_shares          = vault_state.get("usyc_shares", 0),
+        vault_total_aum_usdc       = vault_state.get("total_aum", 0),
+        owner_profile              = owner_profile,
+        eurc_secondary_spread_bps  = market.get("eurc_secondary_spread_bps"),
+        stablfx_spread_bps         = market.get("stablfx_spread_bps"),
     )
 
 

@@ -2,51 +2,57 @@
 pragma solidity ^0.8.24;
 
 /**
- * @title DrachmaVault
- * @notice AI-managed stablecoin reserve vault on Arc (Circle L1)
- * @dev Supports USDC, EURC, USYC — agent is the sole authorized rebalancer.
- *      Every rebalance call appends an immutable DecisionLog entry on-chain,
- *      containing the IPFS CID of the full LLM reasoning trace.
+ * @title DrachmaVault v2
+ * @notice Autonomous stablecoin reserve vault with dUSDC receipt token.
+ *         Upgrades from v1: dUSDC ERC20, DrachmaScore integration, triggerType tracking.
  */
 
 interface IERC20 {
-    function transfer(address to, uint256 amount) external returns (bool);
-    function transferFrom(address from, address to, uint256 amount) external returns (bool);
-    function balanceOf(address account) external view returns (uint256);
-    function approve(address spender, uint256 amount) external returns (bool);
+    function totalSupply() external view returns (uint256);
+    function balanceOf(address) external view returns (uint256);
+    function transfer(address, uint256) external returns (bool);
+    function approve(address, uint256) external returns (bool);
+    function transferFrom(address, address, uint256) external returns (bool);
+    function allowance(address, address) external view returns (uint256);
 }
 
 interface IStableFX {
-    /// @notice Circle StableFX: USDC ↔ EURC at oracle rate
-    function swap(
-        address tokenIn,
-        address tokenOut,
-        uint256 amountIn,
-        uint256 minAmountOut
-    ) external returns (uint256 amountOut);
+    function swap(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut) external returns (uint256);
 }
 
 interface IUSYC {
-    /// @notice Deposit USDC, receive USYC shares
     function deposit(uint256 usdcAmount) external returns (uint256 shares);
-    /// @notice Redeem USYC shares back to USDC (T+1 on Arc)
     function redeem(uint256 shares) external returns (uint256 usdcAmount);
-    /// @notice Current NAV per share in USDC (18 decimals)
     function navPerShare() external view returns (uint256);
 }
 
 contract DrachmaVault {
 
-    // ─── Arc / Circle Contract Addresses (update per environment) ─────────────
+    // --- ERC20 (dUSDC) State ---
+    string  public name     = "Drachma USDC";
+    string  public symbol   = "dUSDC";
+    uint8   public constant dUsdcDecimals = 6;
+
+    uint256 public totalSupply;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
+
+    uint256 public navPerShare = 1_000_000;  // 1.000000 USDC per dUSDC
+
+    // --- Token addresses (Arc Testnet) ---
     address public constant USDC      = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238;
-    address public constant EURC      = 0x08210F9170F89Ab7658F0B5E3fF39b0E03C2e443;
-    address public constant USYC      = 0xc3CDd5F3dF3eBb6E3C2FB05E61Ee2D3f0c0b54C;
+    address public constant EURC      = 0x08210F9170F89AB7658f0B5E3fF39B0e03C2E443;
+    address public constant USYC      = 0x0c3cDD5f3Df3Ebb6e3c2fB05e61EE2D3F0C0b54c;
     address public constant STABLE_FX = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
 
-    // ─── State ─────────────────────────────────────────────────────────────────
     address public owner;
-    address public agent;         // Circle Agent Wallet — only rebalancer
-    uint8   public agentVersion;  // incremented on key rotation
+    address public agent;
+    uint8   public agentVersion;
+
+    // --- v2 New State ---
+    uint16  public reserveScore = 500;
+    address public signalBus;
+    address public scoreOracle;
 
     struct AllocationBands {
         uint16 usdcMin; uint16 usdcMax;
@@ -57,114 +63,163 @@ contract DrachmaVault {
 
     struct DecisionLog {
         uint48  timestamp;
-        uint8   action;           // 0=rebalance 1=sweep_yield 2=emergency_exit
-        uint16  usdcBpsBefore;
-        uint16  eurcBpsBefore;
-        uint16  usycBpsBefore;
-        uint16  usdcBpsAfter;
-        uint16  eurcBpsAfter;
-        uint16  usycBpsAfter;
-        bytes32 reasoningCID;     // sha256(IPFS CID) of full LLM reasoning trace
+        uint8   action;            // 0=rebalance, 1=sweep, 2=emergency
+        uint16  usdcBpsBefore; uint16 eurcBpsBefore; uint16 usycBpsBefore;
+        uint16  usdcBpsAfter;  uint16 eurcBpsAfter;  uint16 usycBpsAfter;
+        bytes32 reasoningCID;
+        uint8   triggerType;       // 0=scheduled, 1=consensus, 2=urgent, 3=conversation
+        int32   networkSignalValue;
     }
     DecisionLog[] public log;
 
-    // ─── Events ────────────────────────────────────────────────────────────────
-    event Rebalanced(uint256 indexed logIndex, bytes32 reasoningCID, uint256 totalAumUsdc);
-    event Deposited(address indexed token, uint256 amount);
-    event Withdrawn(address indexed token, uint256 amount);
+    // --- Events ---
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed _owner, address indexed spender, uint256 value);
+    event Rebalanced(uint256 indexed logIndex, bytes32 reasoningCID, uint256 totalAumUsdc, uint8 triggerType);
+    event Deposited(address indexed depositor, address token, uint256 amount, uint256 dUsdcMinted);
+    event Withdrawn(address indexed redeemer, uint256 dUsdcBurned, uint256 usdcOut);
+    event NavUpdated(uint256 newNavPerShare, uint256 totalAumUsdc);
+    event ScoreUpdated(uint16 oldScore, uint16 newScore, bytes32 evidenceCID);
     event AgentRotated(address indexed oldAgent, address indexed newAgent);
     event EmergencyExit(uint256 usdcRecovered);
 
     modifier onlyOwner() { require(msg.sender == owner, "not owner"); _; }
     modifier onlyAgent() { require(msg.sender == agent, "not agent"); _; }
 
-    constructor(address _agent) {
-        owner = msg.sender;
-        agent = _agent;
-        // Default bands: USDC 20-60%, EURC 10-40%, USYC 20-60%
-        bands = AllocationBands(2000, 6000, 1000, 4000, 2000, 6000);
+    constructor(address _agent, address _signalBus, address _scoreOracle) {
+        owner       = msg.sender;
+        agent       = _agent;
+        signalBus   = _signalBus;
+        scoreOracle = _scoreOracle;
+        bands       = AllocationBands(2000, 6000, 1000, 4000, 2000, 6000);
     }
 
-    // ─── Owner Functions ───────────────────────────────────────────────────────
-
-    function deposit(address token, uint256 amount) external onlyOwner {
-        require(token == USDC || token == EURC, "unsupported token");
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
-        emit Deposited(token, amount);
+    // --- ERC20 Functions (dUSDC) ---
+    function transfer(address to, uint256 amount) external returns (bool) {
+        require(balanceOf[msg.sender] >= amount, "insufficient");
+        balanceOf[msg.sender] -= amount;
+        balanceOf[to]         += amount;
+        emit Transfer(msg.sender, to, amount);
+        return true;
     }
 
-    function withdraw(address token, uint256 amount) external onlyOwner {
-        require(token == USDC || token == EURC || token == USYC, "unsupported");
-        IERC20(token).transfer(msg.sender, amount);
-        emit Withdrawn(token, amount);
+    function approve(address spender, uint256 amount) external returns (bool) {
+        allowance[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
+        return true;
     }
 
-    function updateBands(AllocationBands calldata newBands) external onlyOwner {
-        require(newBands.usdcMax <= 10000 && newBands.eurcMax <= 10000 && newBands.usycMax <= 10000, "overflow");
-        bands = newBands;
+    function transferFrom(address from, address to, uint256 amount) external returns (bool) {
+        require(balanceOf[from] >= amount, "insufficient");
+        require(allowance[from][msg.sender] >= amount, "allowance");
+        allowance[from][msg.sender] -= amount;
+        balanceOf[from]             -= amount;
+        balanceOf[to]               += amount;
+        emit Transfer(from, to, amount);
+        return true;
     }
 
-    function rotateAgent(address newAgent) external onlyOwner {
-        emit AgentRotated(agent, newAgent);
-        agent = newAgent;
-        agentVersion++;
+    // --- Deposit: USDC -> dUSDC ---
+    function depositForShares(uint256 usdcAmount) external returns (uint256 dShares) {
+        require(usdcAmount > 0, "zero deposit");
+        IERC20(USDC).transferFrom(msg.sender, address(this), usdcAmount);
+        dShares = usdcAmount * 1_000_000 / navPerShare;
+        totalSupply           += dShares;
+        balanceOf[msg.sender] += dShares;
+        emit Transfer(address(0), msg.sender, dShares);
+        emit Deposited(msg.sender, USDC, usdcAmount, dShares);
     }
 
-    // ─── Agent Functions ───────────────────────────────────────────────────────
+    // --- Redeem: dUSDC -> USDC ---
+    function redeemShares(uint256 dShares) external returns (uint256 usdcOut) {
+        require(balanceOf[msg.sender] >= dShares, "insufficient shares");
+        usdcOut = dShares * navPerShare / 1_000_000;
+        uint256 liquidUsdc = IERC20(USDC).balanceOf(address(this));
+        require(liquidUsdc >= usdcOut, "insufficient liquidity");
+        totalSupply           -= dShares;
+        balanceOf[msg.sender] -= dShares;
+        IERC20(USDC).transfer(msg.sender, usdcOut);
+        emit Transfer(msg.sender, address(0), dShares);
+        emit Withdrawn(msg.sender, dShares, usdcOut);
+    }
 
+    // --- NAV Update ---
+    function updateNav() external onlyAgent {
+        uint256 aum = _totalAumUsdc();
+        if (totalSupply > 0) {
+            navPerShare = aum * 1_000_000 / totalSupply;
+        }
+        emit NavUpdated(navPerShare, aum);
+    }
+
+    // --- Score Update ---
+    function updateReserveScore(uint16 newScore, bytes32 evidenceCID) external onlyAgent {
+        require(newScore <= 1000, "score > 1000");
+        uint16 old = reserveScore;
+        reserveScore = newScore;
+        emit ScoreUpdated(old, newScore, evidenceCID);
+    }
+
+    // --- Rebalance v2 ---
     function rebalance(
         uint16 targetUsdcBps,
         uint16 targetEurcBps,
         uint16 targetUsycBps,
         bytes32 reasoningCID,
-        uint256 minUsdcOut
+        uint256 minUsdcOut,
+        uint8   triggerType,
+        int32   networkSignalValue
     ) external onlyAgent {
-        require(uint256(targetUsdcBps) + targetEurcBps + targetUsycBps == 10000, "alloc != 100%");
+        require(uint256(targetUsdcBps) + targetEurcBps + targetUsycBps == 10000, "!= 100%");
         _checkBands(targetUsdcBps, targetEurcBps, targetUsycBps);
 
-        (uint16 uBefore, uint16 eBefore, uint16 yBefore) = _currentAllocationBps();
+        (uint16 uB, uint16 eB, uint16 yB) = _currentAllocationBps();
 
-        uint256 aum          = _totalAumUsdc();
+        uint256 aum           = _totalAumUsdc();
         uint256 targetUsdcAmt = aum * targetUsdcBps / 10000;
         uint256 targetEurcAmt = aum * targetEurcBps / 10000;
-        uint256 targetUsycAmt = aum - targetUsdcAmt - targetEurcAmt;
 
         uint256 curUsyc = _usycToUsdc(IERC20(USYC).balanceOf(address(this)));
         uint256 curEurc = _eurcToUsdc(IERC20(EURC).balanceOf(address(this)));
+        uint256 targetUsycAmt = aum - targetUsdcAmt - targetEurcAmt;
 
-        // Step 1: Exit USYC if overweight
         if (curUsyc > targetUsycAmt + 1e6) {
-            uint256 redeemShares = (curUsyc - targetUsycAmt) * 1e18 / IUSYC(USYC).navPerShare();
-            IUSYC(USYC).redeem(redeemShares);
+            uint256 s = (curUsyc - targetUsycAmt) * 1e18 / IUSYC(USYC).navPerShare();
+            IUSYC(USYC).redeem(s);
         }
 
-        // Step 2: Swap EURC ↔ USDC
         if (curEurc > targetEurcAmt + 1e6) {
-            uint256 swapAmt = _usdcToEurc(curEurc - targetEurcAmt);
-            IERC20(EURC).approve(STABLE_FX, swapAmt);
-            IStableFX(STABLE_FX).swap(EURC, USDC, swapAmt, minUsdcOut);
+            uint256 sw = _usdcToEurc(curEurc - targetEurcAmt);
+            IERC20(EURC).approve(STABLE_FX, sw);
+            IStableFX(STABLE_FX).swap(EURC, USDC, sw, minUsdcOut);
         } else if (curEurc < targetEurcAmt - 1e6) {
-            uint256 swapAmt = targetEurcAmt - curEurc;
-            IERC20(USDC).approve(STABLE_FX, swapAmt);
-            IStableFX(STABLE_FX).swap(USDC, EURC, swapAmt, 0);
+            uint256 sw = targetEurcAmt - curEurc;
+            IERC20(USDC).approve(STABLE_FX, sw);
+            IStableFX(STABLE_FX).swap(USDC, EURC, sw, 0);
         }
 
-        // Step 3: Sweep to USYC if underweight
         uint256 curUsdc = IERC20(USDC).balanceOf(address(this));
         if (curUsdc > targetUsdcAmt + 1e6) {
-            uint256 sweepAmt = curUsdc - targetUsdcAmt;
-            IERC20(USDC).approve(USYC, sweepAmt);
-            IUSYC(USYC).deposit(sweepAmt);
+            uint256 sweep = curUsdc - targetUsdcAmt;
+            IERC20(USDC).approve(USYC, sweep);
+            IUSYC(USYC).deposit(sweep);
         }
 
-        (uint16 uAfter, uint16 eAfter, uint16 yAfter) = _currentAllocationBps();
+        if (totalSupply > 0) {
+            navPerShare = _totalAumUsdc() * 1_000_000 / totalSupply;
+        }
+
+        (uint16 uA, uint16 eA, uint16 yA) = _currentAllocationBps();
         log.push(DecisionLog({
             timestamp: uint48(block.timestamp), action: 0,
-            usdcBpsBefore: uBefore, eurcBpsBefore: eBefore, usycBpsBefore: yBefore,
-            usdcBpsAfter: uAfter,  eurcBpsAfter: eAfter,  usycBpsAfter: yAfter,
-            reasoningCID: reasoningCID
+            usdcBpsBefore: uB, eurcBpsBefore: eB, usycBpsBefore: yB,
+            usdcBpsAfter:  uA, eurcBpsAfter:  eA, usycBpsAfter:  yA,
+            reasoningCID: reasoningCID,
+            triggerType:  triggerType,
+            networkSignalValue: networkSignalValue
         }));
-        emit Rebalanced(log.length - 1, reasoningCID, _totalAumUsdc());
+
+        emit Rebalanced(log.length - 1, reasoningCID, _totalAumUsdc(), triggerType);
     }
 
     function emergencyExit(bytes32 reasoningCID) external onlyAgent {
@@ -175,17 +230,40 @@ contract DrachmaVault {
             IERC20(EURC).approve(STABLE_FX, eurcBal);
             IStableFX(STABLE_FX).swap(EURC, USDC, eurcBal, 0);
         }
+        if (totalSupply > 0) {
+            navPerShare = _totalAumUsdc() * 1_000_000 / totalSupply;
+        }
         log.push(DecisionLog({
             timestamp: uint48(block.timestamp), action: 2,
             usdcBpsBefore: 0, eurcBpsBefore: 0, usycBpsBefore: 0,
             usdcBpsAfter: 10000, eurcBpsAfter: 0, usycBpsAfter: 0,
-            reasoningCID: reasoningCID
+            reasoningCID: reasoningCID, triggerType: 2, networkSignalValue: 0
         }));
         emit EmergencyExit(IERC20(USDC).balanceOf(address(this)));
     }
 
-    // ─── View Functions ────────────────────────────────────────────────────────
+    // --- Owner Functions ---
+    function deposit(address token, uint256 amount) external onlyOwner {
+        require(token == USDC || token == EURC, "unsupported");
+        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        emit Deposited(msg.sender, token, amount, 0);
+    }
 
+    function withdraw(address token, uint256 amount) external onlyOwner {
+        IERC20(token).transfer(msg.sender, amount);
+    }
+
+    function updateBands(AllocationBands calldata nb) external onlyOwner {
+        bands = nb;
+    }
+
+    function rotateAgent(address newAgent) external onlyOwner {
+        emit AgentRotated(agent, newAgent);
+        agent = newAgent;
+        agentVersion++;
+    }
+
+    // --- View ---
     function totalAum() external view returns (
         uint256 usdc, uint256 eurc, uint256 usyc, uint256 totalInUsdc
     ) {
@@ -197,8 +275,14 @@ contract DrachmaVault {
 
     function decisionLogLength() external view returns (uint256) { return log.length; }
 
-    // ─── Internal ──────────────────────────────────────────────────────────────
+    function getShareValue(address holder) external view returns (
+        uint256 dUsdcBalance, uint256 usdcValue
+    ) {
+        dUsdcBalance = balanceOf[holder];
+        usdcValue    = dUsdcBalance * navPerShare / 1_000_000;
+    }
 
+    // --- Internal ---
     function _totalAumUsdc() internal view returns (uint256) {
         return IERC20(USDC).balanceOf(address(this))
              + _eurcToUsdc(IERC20(EURC).balanceOf(address(this)))
@@ -213,9 +297,8 @@ contract DrachmaVault {
         y = uint16(10000 - u - e);
     }
 
-    // Simplified 1 EURC = 1.08 USDC for testnet; replace with StableFX oracle in prod
-    function _eurcToUsdc(uint256 eurcAmt) internal pure returns (uint256) { return eurcAmt * 108 / 100; }
-    function _usdcToEurc(uint256 usdcAmt) internal pure returns (uint256) { return usdcAmt * 100 / 108; }
+    function _eurcToUsdc(uint256 a) internal pure returns (uint256) { return a * 108 / 100; }
+    function _usdcToEurc(uint256 a) internal pure returns (uint256) { return a * 100 / 108; }
 
     function _usycToUsdc(uint256 shares) internal view returns (uint256) {
         if (shares == 0) return 0;
@@ -223,8 +306,8 @@ contract DrachmaVault {
     }
 
     function _checkBands(uint16 u, uint16 e, uint16 y) internal view {
-        require(u >= bands.usdcMin && u <= bands.usdcMax, "USDC out of band");
-        require(e >= bands.eurcMin && e <= bands.eurcMax, "EURC out of band");
-        require(y >= bands.usycMin && y <= bands.usycMax, "USYC out of band");
+        require(u >= bands.usdcMin && u <= bands.usdcMax, "USDC band");
+        require(e >= bands.eurcMin && e <= bands.eurcMax, "EURC band");
+        require(y >= bands.usycMin && y <= bands.usycMax, "USYC band");
     }
 }

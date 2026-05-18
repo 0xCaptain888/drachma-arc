@@ -5,10 +5,37 @@ import { AllocationChart } from "@/components/AllocationChart";
 import { YieldCard } from "@/components/YieldCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { DecisionLogTable } from "@/components/DecisionLogTable";
+import { NetworkTicker } from "@/components/NetworkTicker";
+import { NavChart } from "@/components/NavChart";
 import { mockVault, mockDecisionLog, mockMarket } from "@/lib/mockData";
 import { formatUSD, timeAgo } from "@/lib/format";
 import { COLORS } from "@/lib/constants";
-import { Allocation } from "@/lib/types";
+import { Allocation, Signal, NavDataPoint } from "@/lib/types";
+
+// ─── Mock data for new sections ───────────────────────────────────────────────
+
+const NOW = Math.floor(Date.now() / 1000);
+const MIN = 60;
+
+const mockTickerSignals: Signal[] = [
+  { vault: "0x7f3a4b2c1d8e9f0a3b4c5d6e7f8a9b0c1d2e3f4a", agent: "0xaaaa", signalType: 0, value: 38,    timestamp: NOW - 2 * MIN,  vaultScore: 872 },
+  { vault: "0x2b8d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d", agent: "0xbbbb", signalType: 1, value: 10028, timestamp: NOW - 7 * MIN,  vaultScore: 791 },
+  { vault: "0x9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f", agent: "0xcccc", signalType: 5, value: 22,    timestamp: NOW - 15 * MIN, vaultScore: 910 },
+  { vault: "0xa1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0", agent: "0xdddd", signalType: 4, value: 1,     timestamp: NOW - 23 * MIN, vaultScore: 834 },
+  { vault: "0xc4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3", agent: "0xeeee", signalType: 0, value: 41,    timestamp: NOW - 31 * MIN, vaultScore: 658 },
+];
+
+// dUSDC: 7-day NAV history, gradual increase from 1.000000 → 1.000842
+const DAY_MS = 86400 * 1000;
+const mockNavHistory: NavDataPoint[] = Array.from({ length: 8 }, (_, i) => {
+  const d = new Date(Date.now() - (7 - i) * DAY_MS);
+  const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  // Gentle compound curve
+  const nav = 1 + (0.000842 * i) / 7 + Math.sin(i * 0.8) * 0.000012;
+  return { date: label, nav: parseFloat(nav.toFixed(6)) };
+});
+
+const mockDusdcTotalSupply = 4_182_300;
 
 export default function DashboardPage() {
   const vault = mockVault;
@@ -22,6 +49,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Network Activity Ticker */}
+      <NetworkTicker signals={mockTickerSignals} />
+
       {/* Header */}
       <div className="mb-2">
         <h1 className="text-3xl font-bold tracking-tight">DRACHMA</h1>
@@ -58,6 +88,35 @@ export default function DashboardPage() {
         <Stat label="USYC NAV" value={`$${market.usycNav.toFixed(4)}`} />
         <Stat label="USYC APY" value={`${market.usycApy}%`} />
         <Stat label="Decisions" value={mockDecisionLog.length.toString()} />
+      </div>
+
+      {/* dUSDC section */}
+      <div className="rounded-xl border border-dark-border bg-dark-card p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400">
+              dUSDC — Vault Share Token
+            </h3>
+            <p className="mt-0.5 text-xs text-gray-500">
+              1 dUSDC represents a pro-rata share of the managed reserve pool
+            </p>
+          </div>
+          <div className="flex items-center gap-6 text-sm">
+            <div>
+              <span className="text-gray-500">NAV/share: </span>
+              <span className="font-mono font-semibold text-white">
+                ${mockNavHistory[mockNavHistory.length - 1].nav.toFixed(6)}
+              </span>
+            </div>
+            <div>
+              <span className="text-gray-500">Supply: </span>
+              <span className="font-medium text-gray-200">
+                {mockDusdcTotalSupply.toLocaleString("en-US")} dUSDC
+              </span>
+            </div>
+          </div>
+        </div>
+        <NavChart data={mockNavHistory} />
       </div>
 
       {/* Decision log */}

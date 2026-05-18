@@ -74,3 +74,60 @@ export const CONTRACT_ACTION_LABELS: Record<ContractActionType, string> = {
   1: "Sweep Yield",
   2: "Emergency Exit",
 } as const;
+
+// ─── Signal Bus ──────────────────────────────────────────────────────────────
+
+/** A single signal submitted by one vault agent to the Signal Bus */
+export interface Signal {
+  vault: string;      // address — submitting vault
+  agent: string;      // address — agent that produced the signal
+  signalType: number; // uint8   — 0-5, see SIGNAL_TYPE_LABELS
+  value: number;      // int32   — signal value (e.g. bps spread)
+  timestamp: number;  // uint48  — unix seconds
+  vaultScore: number; // uint16  — DrachmaScore of the submitting vault at time of signal
+}
+
+/** A ConsensusReached event aggregated across participating vaults */
+export interface ConsensusEvent {
+  signalType: number;          // uint8
+  weightedAvgValue: number;    // int32 — weighted average across contributing vaults
+  vaultCount: number;          // uint256 — number of vaults that contributed
+  contributingVaults: string[]; // address[]
+  timestamp: number;           // uint48
+}
+
+// ─── DrachmaScore ────────────────────────────────────────────────────────────
+
+/** The four sub-components that make up a vault's DrachmaScore */
+export interface ScoreBreakdown {
+  yieldPerformance: number; // uint16, max 300
+  bandDiscipline: number;   // uint16, max 250
+  riskResponse: number;     // uint16, max 250
+  consistency: number;      // uint16, max 200
+}
+
+/** A vault's full score record for the leaderboard */
+export interface ScoreRecord {
+  rank: number;
+  vault: string;          // address
+  score: number;          // uint16, max 1000
+  creditLane: boolean;    // eligible for credit lane?
+  lastUpdate: number;     // uint48 — unix seconds
+  breakdown: ScoreBreakdown;
+  ipfsCid?: string;       // optional IPFS evidence link
+}
+
+// ─── dUSDC ───────────────────────────────────────────────────────────────────
+
+/** NAV data point for the dUSDC chart */
+export interface NavDataPoint {
+  date: string;   // ISO date string label
+  nav: number;    // NAV per share, e.g. 1.000842
+}
+
+/** dUSDC token state */
+export interface DusdcState {
+  navPerShare: number;
+  totalSupply: number;
+  history: NavDataPoint[];
+}
