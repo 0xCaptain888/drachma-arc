@@ -4,8 +4,8 @@
 > Drachma is the treasury department of the AI agent economy —
 > autonomous, collective, and composable.
 
-[![Dashboard](https://img.shields.io/badge/Dashboard-Live-brightgreen?style=for-the-badge)](https://drachma.xyz)
-[![Demo Video](https://img.shields.io/badge/Demo_Video-3min-blue?style=for-the-badge)](https://loom.com/share/drachma-demo)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Drachma_Network-brightgreen?style=for-the-badge)](https://k57pbkvj.mule.page/#)
+[![Twitter](https://img.shields.io/badge/X_%2F_Twitter-@0xCaptain888-blue?style=for-the-badge&logo=x)](https://x.com/0xCaptain888)
 [![Arc Explorer](https://img.shields.io/badge/Arc_Explorer-28_decisions-orange?style=for-the-badge)](https://testnet.arcscan.app/address/0xD3D5b81b28b51aDdc5A3a06231C5d0ED782E1995)
 
 Built for the **Agora Hackathon** — Canteen × Circle | Arc L1 | May 2026
